@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERP Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <%- include('partials/navbar') %>
+        
+        <div class="main-content">
+            <div class="dashboard">
+                <div class="dashboard-header">
+                    <h1>📊 ERP Dashboard</h1>
+                    <p>Welcome back, <strong><%= admin.fullName %></strong></p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <h3>Total Employees</h3>
+                            <p class="stat-number"><%= stats.totalEmployees %></p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">🏢</div>
+                        <div class="stat-content">
+                            <h3>Departments</h3>
+                            <p class="stat-number"><%= stats.totalDepartments %></p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <h3>Monthly Salary Expense</h3>
+                            <p class="stat-number">₹<%= stats.totalSalaryExpense.toLocaleString() %></p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-content">
+                            <h3>System Status</h3>
+                            <p class="stat-status active">Active</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-sections">
+                    <div class="section">
+                        <h2>🎯 Quick Actions</h2>
+                        <div class="action-buttons">
+                            <a href="/employees/add" class="btn btn-primary">➕ Add Employee</a>
+                            <a href="/employees" class="btn btn-secondary">👥 View All Employees</a>
+                            <a href="/employees?department=IT" class="btn btn-info">💻 IT Department</a>
+                            <a href="/employees?department=HR" class="btn btn-warning">👤 HR Department</a>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2>👥 Recent Employees</h2>
+                        <% if (stats.recentEmployees.length > 0) { %>
+                            <div class="recent-employees">
+                                <% stats.recentEmployees.forEach(employee => { %>
+                                    <div class="employee-card">
+                                        <div class="employee-avatar">
+                                            <%= employee.firstName.charAt(0) + employee.lastName.charAt(0) %>
+                                        </div>
+                                        <div class="employee-info">
+                                            <h4><%= employee.firstName %> <%= employee.lastName %></h4>
+                                            <p><%= employee.empId %> • <%= employee.department %></p>
+                                            <p class="position"><%= employee.position %></p>
+                                            <p class="join-date">Joined: <%= new Date(employee.createdAt).toLocaleDateString() %></p>
+                                        </div>
+                                        <div class="employee-actions">
+                                            <a href="/employees/view/<%= employee._id %>" class="btn btn-sm btn-info">View</a>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        <% } else { %>
+                            <div class="no-data">
+                                <p>No employees found. <a href="/employees/add">Add the first employee</a></p>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="system-info">
+                    <h2>🔧 System Information</h2>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Database:</strong> MongoDB Atlas
+                        </div>
+                        <div class="info-item">
+                            <strong>Session Store:</strong> MongoDB
+                        </div>
+                        <div class="info-item">
+                            <strong>Email Service:</strong> Nodemailer
+                        </div>
+                        <div class="info-item">
+                            <strong>Admin Role:</strong> <%= admin.role %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

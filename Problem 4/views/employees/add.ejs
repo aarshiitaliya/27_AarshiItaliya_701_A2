@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Employee - ERP</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <%- include('../partials/navbar') %>
+        
+        <div class="main-content">
+            <div class="add-employee">
+                <div class="page-header">
+                    <h1>➕ Add New Employee</h1>
+                    <a href="/employees" class="btn btn-secondary">← Back to Employees</a>
+                </div>
+
+                <% if (error) { %>
+                    <div class="alert alert-error">
+                        <strong>Error:</strong> <%= error %>
+                    </div>
+                <% } %>
+
+                <% if (success) { %>
+                    <div class="alert alert-success">
+                        <strong>Success:</strong> <%= success %>
+                    </div>
+                <% } %>
+
+                <form method="POST" action="/employees/add" class="employee-form">
+                    <div class="form-section">
+                        <h3>📋 Personal Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name *</label>
+                                <input type="text" id="firstName" name="firstName" required 
+                                       value="<%= formData.firstName || '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" name="lastName" required 
+                                       value="<%= formData.lastName || '' %>">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required 
+                                       value="<%= formData.email || '' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number *</label>
+                                <input type="tel" id="phone" name="phone" required 
+                                       value="<%= formData.phone || '' %>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>🏢 Job Information</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="department">Department *</label>
+                                <select id="department" name="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="IT" <%= formData.department === 'IT' ? 'selected' : '' %>>IT</option>
+                                    <option value="HR" <%= formData.department === 'HR' ? 'selected' : '' %>>HR</option>
+                                    <option value="Finance" <%= formData.department === 'Finance' ? 'selected' : '' %>>Finance</option>
+                                    <option value="Marketing" <%= formData.department === 'Marketing' ? 'selected' : '' %>>Marketing</option>
+                                    <option value="Operations" <%= formData.department === 'Operations' ? 'selected' : '' %>>Operations</option>
+                                    <option value="Sales" <%= formData.department === 'Sales' ? 'selected' : '' %>>Sales</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="position">Position *</label>
+                                <input type="text" id="position" name="position" required 
+                                       value="<%= formData.position || '' %>">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="joiningDate">Joining Date</label>
+                                <input type="date" id="joiningDate" name="joiningDate" 
+                                       value="<%= formData.joiningDate || new Date().toISOString().split('T')[0] %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="baseSalary">Base Salary (₹) *</label>
+                                <input type="number" id="baseSalary" name="baseSalary" required min="0" step="0.01"
+                                       value="<%= formData.baseSalary || '' %>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>💰 Allowances</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="hra">HRA (₹)</label>
+                                <input type="number" id="hra" name="hra" min="0" step="0.01"
+                                       value="<%= formData.hra || '0' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="transport">Transport Allowance (₹)</label>
+                                <input type="number" id="transport" name="transport" min="0" step="0.01"
+                                       value="<%= formData.transport || '0' %>">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="medical">Medical Allowance (₹)</label>
+                                <input type="number" id="medical" name="medical" min="0" step="0.01"
+                                       value="<%= formData.medical || '0' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="otherAllowance">Other Allowance (₹)</label>
+                                <input type="number" id="otherAllowance" name="otherAllowance" min="0" step="0.01"
+                                       value="<%= formData.otherAllowance || '0' %>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>📉 Deductions</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="pf">Provident Fund (₹)</label>
+                                <input type="number" id="pf" name="pf" min="0" step="0.01"
+                                       value="<%= formData.pf || '0' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="tax">Tax (₹)</label>
+                                <input type="number" id="tax" name="tax" min="0" step="0.01"
+                                       value="<%= formData.tax || '0' %>">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="insurance">Insurance (₹)</label>
+                                <input type="number" id="insurance" name="insurance" min="0" step="0.01"
+                                       value="<%= formData.insurance || '0' %>">
+                            </div>
+                            <div class="form-group">
+                                <label for="otherDeduction">Other Deduction (₹)</label>
+                                <input type="number" id="otherDeduction" name="otherDeduction" min="0" step="0.01"
+                                       value="<%= formData.otherDeduction || '0' %>">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="salary-preview">
+                        <h3>💼 Salary Calculation Preview</h3>
+                        <div class="salary-breakdown">
+                            <div class="salary-item">
+                                <span>Base Salary:</span>
+                                <span id="previewBaseSalary">₹0</span>
+                            </div>
+                            <div class="salary-item">
+                                <span>Total Allowances:</span>
+                                <span id="previewAllowances">₹0</span>
+                            </div>
+                            <div class="salary-item gross">
+                                <span><strong>Gross Salary:</strong></span>
+                                <span id="previewGrossSalary"><strong>₹0</strong></span>
+                            </div>
+                            <div class="salary-item">
+                                <span>Total Deductions:</span>
+                                <span id="previewDeductions">₹0</span>
+                            </div>
+                            <div class="salary-item net">
+                                <span><strong>Net Salary:</strong></span>
+                                <span id="previewNetSalary"><strong>₹0</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">💾 Create Employee</button>
+                        <a href="/employees" class="btn btn-secondary">❌ Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Real-time salary calculation
+        function calculateSalary() {
+            const baseSalary = parseFloat(document.getElementById('baseSalary').value) || 0;
+            const hra = parseFloat(document.getElementById('hra').value) || 0;
+            const transport = parseFloat(document.getElementById('transport').value) || 0;
+            const medical = parseFloat(document.getElementById('medical').value) || 0;
+            const otherAllowance = parseFloat(document.getElementById('otherAllowance').value) || 0;
+            
+            const pf = parseFloat(document.getElementById('pf').value) || 0;
+            const tax = parseFloat(document.getElementById('tax').value) || 0;
+            const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+            const otherDeduction = parseFloat(document.getElementById('otherDeduction').value) || 0;
+            
+            const totalAllowances = hra + transport + medical + otherAllowance;
+            const grossSalary = baseSalary + totalAllowances;
+            const totalDeductions = pf + tax + insurance + otherDeduction;
+            const netSalary = grossSalary - totalDeductions;
+            
+            document.getElementById('previewBaseSalary').textContent = '₹' + baseSalary.toLocaleString();
+            document.getElementById('previewAllowances').textContent = '₹' + totalAllowances.toLocaleString();
+            document.getElementById('previewGrossSalary').textContent = '₹' + grossSalary.toLocaleString();
+            document.getElementById('previewDeductions').textContent = '₹' + totalDeductions.toLocaleString();
+            document.getElementById('previewNetSalary').textContent = '₹' + netSalary.toLocaleString();
+        }
+        
+        // Add event listeners to all salary-related inputs
+        const salaryInputs = ['baseSalary', 'hra', 'transport', 'medical', 'otherAllowance', 'pf', 'tax', 'insurance', 'otherDeduction'];
+        salaryInputs.forEach(inputId => {
+            document.getElementById(inputId).addEventListener('input', calculateSalary);
+        });
+        
+        // Calculate on page load
+        calculateSalary();
+    </script>
+</body>
+</html>

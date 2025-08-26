@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Successful</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="success-container">
+            <h1>Registration Successful!</h1>
+            <p class="success-message">Your registration has been completed successfully. Here are your details:</p>
+            
+            <div class="data-table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Username</strong></td>
+                            <td><%= userData.username %></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Email</strong></td>
+                            <td><%= userData.email %></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gender</strong></td>
+                            <td class="capitalize"><%= userData.gender %></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Hobbies</strong></td>
+                            <td>
+                                <% if (userData.hobbies && userData.hobbies.length > 0) { %>
+                                    <div class="hobbies-list">
+                                        <% userData.hobbies.forEach(hobby => { %>
+                                            <span class="hobby-tag"><%= hobby %></span>
+                                        <% }); %>
+                                    </div>
+                                <% } else { %>
+                                    <span class="no-data">No hobbies selected</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Profile Picture</strong></td>
+                            <td>
+                                <% if (userData.profilePic) { %>
+                                    <div class="image-container">
+                                        <img src="/uploads/<%= userData.profilePic.filename %>" 
+                                             alt="Profile Picture" 
+                                             class="profile-image">
+                                        <div class="image-info">
+                                            <p><strong>Filename:</strong> <%= userData.profilePic.originalname %></p>
+                                            <p><strong>Size:</strong> <%= (userData.profilePic.size / 1024).toFixed(2) %> KB</p>
+                                            <a href="/download/<%= userData.profilePic.filename %>" class="download-btn" download>
+                                                <i class="download-icon">⬇</i> Download Profile Picture
+                                            </a>
+                                        </div>
+                                    </div>
+                                <% } else { %>
+                                    <span class="no-data">No profile picture uploaded</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Other Pictures</strong></td>
+                            <td>
+                                <% if (userData.otherPics && userData.otherPics.length > 0) { %>
+                                    <div class="other-images-container">
+                                        <p class="images-count"><%= userData.otherPics.length %> image(s) uploaded</p>
+                                        <div class="images-grid">
+                                            <% userData.otherPics.forEach((pic, index) => { %>
+                                                <div class="image-item">
+                                                    <img src="/uploads/<%= pic.filename %>" 
+                                                         alt="Other Picture <%= index + 1 %>" 
+                                                         class="other-image">
+                                                    <div class="image-details">
+                                                        <p class="image-name"><%= pic.originalname %></p>
+                                                        <p class="image-size"><%= (pic.size / 1024).toFixed(2) %> KB</p>
+                                                        <a href="/download/<%= pic.filename %>" class="download-btn" download>
+                                                            <i class="download-icon">⬇</i> Download
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                <% } else { %>
+                                    <span class="no-data">No other pictures uploaded</span>
+                                <% } %>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="/" class="btn btn-primary">Register Another User</a>
+                <button onclick="window.print()" class="btn btn-secondary">Print Details</button>
+                <% if (userData.profilePic || (userData.otherPics && userData.otherPics.length > 0)) { %>
+                    <button onclick="downloadAllFiles()" class="btn btn-download">Download All Files</button>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive features
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click to enlarge functionality for images
+            const images = document.querySelectorAll('.profile-image, .other-image');
+            images.forEach(img => {
+                img.addEventListener('click', function() {
+                    // Create modal for image preview
+                    const modal = document.createElement('div');
+                    modal.className = 'image-modal';
+                    modal.innerHTML = `
+                        <div class="modal-content">
+                            <span class="close-modal">&times;</span>
+                            <img src="${this.src}" alt="${this.alt}" class="modal-image">
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(modal);
+                    
+                    // Close modal functionality
+                    const closeBtn = modal.querySelector('.close-modal');
+                    closeBtn.addEventListener('click', () => {
+                        document.body.removeChild(modal);
+                    });
+                    
+                    modal.addEventListener('click', (e) => {
+                        if (e.target === modal) {
+                            document.body.removeChild(modal);
+                        }
+                    });
+                });
+            });
+            
+            // Add animation to success message
+            const successContainer = document.querySelector('.success-container');
+            successContainer.style.opacity = '0';
+            successContainer.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                successContainer.style.transition = 'all 0.5s ease';
+                successContainer.style.opacity = '1';
+                successContainer.style.transform = 'translateY(0)';
+            }, 100);
+        });
+
+        // Download all files function
+        function downloadAllFiles() {
+            // Get all download links from the page
+            const downloadLinks = document.querySelectorAll('a[href^="/download/"]');
+            const files = Array.from(downloadLinks).map(link => {
+                const href = link.getAttribute('href');
+                return href.split('/').pop(); // Extract filename from URL
+            });
+            
+            if (files.length === 0) {
+                alert('No files to download');
+                return;
+            }
+            
+            // Send POST request to download all files as zip
+            fetch('/download-all', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ files: files })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Download failed');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'user-files.zip';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                console.error('Download error:', error);
+                alert('Failed to download files. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>

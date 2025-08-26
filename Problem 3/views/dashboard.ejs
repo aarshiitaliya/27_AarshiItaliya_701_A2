@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Redis Session Store</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="dashboard">
+            <div class="header">
+                <h1>🏠 Dashboard</h1>
+                <div class="user-info">
+                    Welcome, <strong><%= user.username %></strong>
+                    <span class="role-badge role-<%= user.role %>"><%= user.role %></span>
+                </div>
+            </div>
+
+            <div class="session-info">
+                <h2>📊 Session Information</h2>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>Session Store</h3>
+                        <p class="highlight">Redis</p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Session ID</h3>
+                        <p class="session-id"><%= sessionId %></p>
+                    </div>
+                    <div class="info-card">
+                        <h3>User Role</h3>
+                        <p class="role-<%= user.role %>"><%= user.role %></p>
+                    </div>
+                    <div class="info-card">
+                        <h3>Email</h3>
+                        <p><%= user.email %></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <h2>🛠️ Available Actions</h2>
+                <div class="action-buttons">
+                    <a href="/profile" class="btn btn-secondary">👤 View Profile</a>
+                    <% if (user.role === 'admin') { %>
+                        <a href="/admin" class="btn btn-admin">⚙️ Admin Panel</a>
+                    <% } %>
+                    <button onclick="viewSessionDetails()" class="btn btn-info">📋 Session Details</button>
+                    <form method="POST" action="/logout" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">🚪 Logout</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="redis-features">
+                <h2>🔴 Redis Session Features</h2>
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <h3>⚡ High Performance</h3>
+                        <p>In-memory data structure store for fast session access</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>🔄 Persistence</h3>
+                        <p>Sessions persist across server restarts</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>📈 Scalability</h3>
+                        <p>Supports horizontal scaling with shared session store</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>⏰ TTL Support</h3>
+                        <p>Automatic session expiration with Redis TTL</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function viewSessionDetails() {
+            fetch('/api/session')
+                .then(response => response.json())
+                .then(data => {
+                    const details = `Session Details:
+
+Session ID: ${data.sessionId}
+Store Type: ${data.store}
+User: ${data.user.username}
+Role: ${data.user.role}
+Email: ${data.user.email}
+Cookie Max Age: ${data.cookie.maxAge}ms
+Cookie Expires: ${new Date(data.cookie.expires).toLocaleString()}
+HTTP Only: ${data.cookie.httpOnly}
+Secure: ${data.cookie.secure}`;
+                    
+                    alert(details);
+                })
+                .catch(error => {
+                    alert('Error fetching session details: ' + error.message);
+                });
+        }
+    </script>
+</body>
+</html>

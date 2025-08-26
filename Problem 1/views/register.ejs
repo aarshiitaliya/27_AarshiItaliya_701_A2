@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration Form</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>User Registration</h1>
+            
+            <!-- Display validation errors -->
+            <% if (errors && errors.length > 0) { %>
+                <div class="error-container">
+                    <h3>Please fix the following errors:</h3>
+                    <ul class="error-list">
+                        <% errors.forEach(error => { %>
+                            <li><%= error.msg %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            <% } %>
+
+            <form action="/register" method="POST" enctype="multipart/form-data" id="registrationForm">
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        value="<%= formData.username || '' %>"
+                        placeholder="Enter your username (3-20 characters)"
+                        required
+                    >
+                    <small>Only letters, numbers, and underscores allowed</small>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Enter your password (min 6 characters)"
+                        required
+                    >
+                    <small>Must contain uppercase, lowercase, and number</small>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword" 
+                        placeholder="Confirm your password"
+                        required
+                    >
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        value="<%= formData.email || '' %>"
+                        placeholder="Enter your email address"
+                        required
+                    >
+                </div>
+
+                <!-- Gender (Radio buttons) -->
+                <div class="form-group">
+                    <label class="group-label">Gender *</label>
+                    <div class="radio-group">
+                        <label class="radio-label">
+                            <input 
+                                type="radio" 
+                                name="gender" 
+                                value="male"
+                                <%= formData.gender === 'male' ? 'checked' : '' %>
+                                required
+                            >
+                            <span class="radio-custom"></span>
+                            Male
+                        </label>
+                        <label class="radio-label">
+                            <input 
+                                type="radio" 
+                                name="gender" 
+                                value="female"
+                                <%= formData.gender === 'female' ? 'checked' : '' %>
+                                required
+                            >
+                            <span class="radio-custom"></span>
+                            Female
+                        </label>
+                        <label class="radio-label">
+                            <input 
+                                type="radio" 
+                                name="gender" 
+                                value="other"
+                                <%= formData.gender === 'other' ? 'checked' : '' %>
+                                required
+                            >
+                            <span class="radio-custom"></span>
+                            Other
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Hobbies (Checkboxes) -->
+                <div class="form-group">
+                    <label class="group-label">Hobbies</label>
+                    <div class="checkbox-group">
+                        <% 
+                        const hobbies = ['Reading', 'Sports', 'Music', 'Travel', 'Cooking'];
+                        const selectedHobbies = formData.hobbies || [];
+                        %>
+                        <% hobbies.forEach(hobby => { %>
+                            <label class="checkbox-label">
+                                <input 
+                                    type="checkbox" 
+                                    name="hobbies" 
+                                    value="<%= hobby %>"
+                                    <%= selectedHobbies.includes(hobby) ? 'checked' : '' %>
+                                >
+                                <span class="checkbox-custom"></span>
+                                <%= hobby %>
+                            </label>
+                        <% }); %>
+                    </div>
+                </div>
+
+                <!-- Profile Picture (Single file upload) -->
+                <div class="form-group">
+                    <label for="profilePic">Profile Picture *</label>
+                    <input 
+                        type="file" 
+                        id="profilePic" 
+                        name="profilePic" 
+                        accept="image/*"
+                        required
+                        class="file-input"
+                    >
+                    <small>Upload your profile picture (max 5MB, images only)</small>
+                </div>
+
+                <!-- Other Pictures (Multiple file upload) -->
+                <div class="form-group">
+                    <label for="otherPics">Other Pictures</label>
+                    <input 
+                        type="file" 
+                        id="otherPics" 
+                        name="otherPics" 
+                        accept="image/*"
+                        multiple
+                        class="file-input"
+                    >
+                    <small>Upload additional pictures (max 10 files, 5MB each, images only)</small>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button type="submit" class="submit-btn">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Client-side validation
+        document.getElementById('registrationForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                alert('Passwords do not match!');
+                return false;
+            }
+            
+            // Check password strength
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+            if (!passwordRegex.test(password)) {
+                e.preventDefault();
+                alert('Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, and one number.');
+                return false;
+            }
+            
+            // Check username format
+            const username = document.getElementById('username').value;
+            const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
+            if (!usernameRegex.test(username)) {
+                e.preventDefault();
+                alert('Username must be 3-20 characters long and contain only letters, numbers, and underscores.');
+                return false;
+            }
+            
+            // Check file count for other pictures
+            const otherPics = document.getElementById('otherPics').files;
+            if (otherPics.length > 10) {
+                e.preventDefault();
+                alert('You can upload maximum 10 other pictures.');
+                return false;
+            }
+            
+            // Check file sizes
+            const profilePic = document.getElementById('profilePic').files[0];
+            if (profilePic && profilePic.size > 5 * 1024 * 1024) {
+                e.preventDefault();
+                alert('Profile picture size must be less than 5MB.');
+                return false;
+            }
+            
+            for (let i = 0; i < otherPics.length; i++) {
+                if (otherPics[i].size > 5 * 1024 * 1024) {
+                    e.preventDefault();
+                    alert('Each picture must be less than 5MB.');
+                    return false;
+                }
+            }
+        });
+
+        // Real-time password confirmation check
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.style.borderColor = '#e74c3c';
+            } else {
+                this.style.borderColor = '#ddd';
+            }
+        });
+
+        // File input styling and preview
+        document.querySelectorAll('.file-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const fileCount = this.files.length;
+                const label = this.previousElementSibling;
+                
+                if (fileCount > 0) {
+                    if (this.name === 'profilePic') {
+                        label.textContent = `Profile Picture - ${this.files[0].name}`;
+                    } else {
+                        label.textContent = `Other Pictures - ${fileCount} file(s) selected`;
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employees List - ERP</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <%- include('../partials/navbar') %>
+        
+        <div class="main-content">
+            <div class="employees-list">
+                <div class="page-header">
+                    <h1>👥 Employee Management</h1>
+                    <div class="header-actions">
+                        <a href="/employees/add" class="btn btn-primary">➕ Add New Employee</a>
+                    </div>
+                </div>
+
+                <% if (req.query.success) { %>
+                    <div class="alert alert-success">
+                        <%= req.query.success %>
+                    </div>
+                <% } %>
+
+                <% if (req.query.error) { %>
+                    <div class="alert alert-error">
+                        <%= req.query.error %>
+                    </div>
+                <% } %>
+
+                <div class="employees-stats">
+                    <p>Total Employees: <strong><%= totalEmployees %></strong></p>
+                </div>
+
+                <% if (employees.length > 0) { %>
+                    <div class="table-container">
+                        <table class="employees-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Department</th>
+                                    <th>Position</th>
+                                    <th>Base Salary</th>
+                                    <th>Net Salary</th>
+                                    <th>Joining Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% employees.forEach(employee => { %>
+                                    <tr>
+                                        <td class="emp-id"><%= employee.empId %></td>
+                                        <td class="emp-name">
+                                            <div class="name-cell">
+                                                <div class="avatar">
+                                                    <%= employee.firstName.charAt(0) + employee.lastName.charAt(0) %>
+                                                </div>
+                                                <span><%= employee.fullName %></span>
+                                            </div>
+                                        </td>
+                                        <td><%= employee.email %></td>
+                                        <td>
+                                            <span class="dept-badge dept-<%= employee.department.toLowerCase() %>">
+                                                <%= employee.department %>
+                                            </span>
+                                        </td>
+                                        <td><%= employee.position %></td>
+                                        <td class="salary">₹<%= employee.baseSalary.toLocaleString() %></td>
+                                        <td class="salary net-salary">₹<%= employee.netSalary.toLocaleString() %></td>
+                                        <td><%= new Date(employee.joiningDate).toLocaleDateString() %></td>
+                                        <td class="actions">
+                                            <a href="/employees/view/<%= employee._id %>" class="btn btn-sm btn-info">👁️ View</a>
+                                            <a href="/employees/edit/<%= employee._id %>" class="btn btn-sm btn-warning">✏️ Edit</a>
+                                            <form method="POST" action="/employees/delete/<%= employee._id %>" style="display: inline;" 
+                                                  onsubmit="return confirm('Are you sure you want to delete this employee?')">
+                                                <button type="submit" class="btn btn-sm btn-danger">🗑️ Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <% if (totalPages > 1) { %>
+                        <div class="pagination">
+                            <% if (currentPage > 1) { %>
+                                <a href="/employees?page=<%= currentPage - 1 %>" class="btn btn-secondary">← Previous</a>
+                            <% } %>
+                            
+                            <span class="page-info">
+                                Page <%= currentPage %> of <%= totalPages %>
+                            </span>
+                            
+                            <% if (currentPage < totalPages) { %>
+                                <a href="/employees?page=<%= currentPage + 1 %>" class="btn btn-secondary">Next →</a>
+                            <% } %>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="no-employees">
+                        <div class="no-data-icon">👥</div>
+                        <h3>No Employees Found</h3>
+                        <p>Start building your team by adding the first employee.</p>
+                        <a href="/employees/add" class="btn btn-primary">➕ Add First Employee</a>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,719 @@
+/* Redis Session Store - Modern CSS Styling */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Login Form Styles */
+.login-form {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 500px;
+}
+
+.form-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.form-header h1 {
+    color: #4a5568;
+    margin-bottom: 10px;
+    font-size: 2.5em;
+}
+
+.form-header p {
+    color: #718096;
+    font-size: 1.1em;
+}
+
+/* Alert Styles */
+.alert {
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.alert-error {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+    border: 1px solid #ff5252;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #51cf66, #40c057);
+    color: white;
+    border: 1px solid #51cf66;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Button Styles */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    transition: all 0.3s ease;
+    margin: 5px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    width: 100%;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #a0aec0, #718096);
+    color: white;
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(160, 174, 192, 0.3);
+}
+
+.btn-admin {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+}
+
+.btn-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(240, 147, 251, 0.3);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(79, 172, 254, 0.3);
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(255, 107, 107, 0.3);
+}
+
+/* Demo Accounts Info */
+.demo-accounts {
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(102, 126, 234, 0.1);
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.demo-accounts h3 {
+    color: #4a5568;
+    margin-bottom: 15px;
+}
+
+.account-info {
+    margin-bottom: 10px;
+    color: #4a5568;
+}
+
+.account-info code {
+    background: rgba(102, 126, 234, 0.2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+}
+
+/* Tech Info */
+.tech-info {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(118, 75, 162, 0.1);
+    border-radius: 10px;
+    border-left: 4px solid #764ba2;
+}
+
+.tech-info h4 {
+    color: #4a5568;
+    margin-bottom: 15px;
+}
+
+.tech-info ul {
+    list-style: none;
+    color: #4a5568;
+}
+
+.tech-info li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.tech-info li::before {
+    content: "🔴";
+    position: absolute;
+    left: 0;
+}
+
+/* Dashboard Styles */
+.dashboard, .profile, .admin-panel {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 1000px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.header h1 {
+    color: #4a5568;
+    font-size: 2.5em;
+}
+
+.user-info {
+    color: #718096;
+    font-size: 1.1em;
+}
+
+.breadcrumb {
+    color: #718096;
+    margin-bottom: 10px;
+}
+
+.breadcrumb a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+/* Role Badges */
+.role-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 10px;
+}
+
+.role-admin {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    color: white;
+}
+
+.role-user {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    color: white;
+}
+
+/* Info Grid */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.info-card {
+    background: rgba(102, 126, 234, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    border-left: 4px solid #667eea;
+}
+
+.info-card h3 {
+    color: #4a5568;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+.info-card p {
+    color: #718096;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.highlight {
+    color: #667eea !important;
+    font-weight: 700;
+}
+
+.session-id {
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    word-break: break-all;
+}
+
+/* Action Buttons */
+.actions {
+    margin: 30px 0;
+}
+
+.actions h2 {
+    color: #4a5568;
+    margin-bottom: 20px;
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* Redis Features */
+.redis-features {
+    margin-top: 30px;
+}
+
+.redis-features h2 {
+    color: #4a5568;
+    margin-bottom: 20px;
+}
+
+.feature-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.feature-item {
+    background: rgba(220, 38, 127, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 4px solid #dc267f;
+}
+
+.feature-item h3 {
+    color: #4a5568;
+    margin-bottom: 10px;
+}
+
+.feature-item p {
+    color: #718096;
+}
+
+/* Profile Styles */
+.profile-card {
+    background: rgba(255, 255, 255, 0.5);
+    padding: 30px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    font-weight: bold;
+    color: white;
+    margin-right: 20px;
+}
+
+.profile-info h2 {
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detail-item label {
+    font-weight: 600;
+    color: #4a5568;
+}
+
+.detail-item span {
+    color: #718096;
+}
+
+/* Benefits List */
+.benefits-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 10px;
+}
+
+.benefit-item .icon {
+    font-size: 1.5em;
+    min-width: 40px;
+}
+
+.benefit-item strong {
+    color: #4a5568;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.benefit-item p {
+    color: #718096;
+    margin: 0;
+}
+
+/* Admin Panel Styles */
+.admin-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: rgba(102, 126, 234, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    border-left: 4px solid #667eea;
+}
+
+.stat-card h3 {
+    color: #4a5568;
+    margin-bottom: 10px;
+    font-size: 1em;
+}
+
+.stat-card .count {
+    font-size: 2em;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.stat-card .status {
+    font-weight: 600;
+}
+
+.stat-card .connected {
+    color: #51cf66;
+}
+
+.stat-card .disconnected {
+    color: #ff6b6b;
+}
+
+/* Table Styles */
+.table-container {
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    background: rgba(102, 126, 234, 0.1);
+    font-weight: 600;
+    color: #4a5568;
+}
+
+td {
+    color: #718096;
+}
+
+.redis-key {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8em;
+    max-width: 200px;
+    word-break: break-all;
+}
+
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.status-badge.active {
+    background: #51cf66;
+    color: white;
+}
+
+.no-sessions {
+    text-align: center;
+    padding: 40px;
+    color: #718096;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 10px;
+}
+
+/* Feature Grid */
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.feature-card {
+    background: rgba(220, 38, 127, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+    border-left: 4px solid #dc267f;
+}
+
+.feature-card h3 {
+    color: #4a5568;
+    margin-bottom: 10px;
+}
+
+.feature-card p {
+    color: #718096;
+    margin: 0;
+}
+
+/* Error Page Styles */
+.error-page {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.error-header h1 {
+    color: #ff6b6b;
+    font-size: 3em;
+    margin-bottom: 10px;
+}
+
+.error-header p {
+    color: #718096;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+.error-message {
+    background: rgba(255, 107, 107, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #ff6b6b;
+    margin-bottom: 30px;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.error-info {
+    background: rgba(102, 126, 234, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    text-align: left;
+}
+
+.error-info h3 {
+    color: #4a5568;
+    margin-bottom: 15px;
+}
+
+.error-info p {
+    color: #718096;
+    margin-bottom: 15px;
+}
+
+.error-info ul {
+    color: #718096;
+    padding-left: 20px;
+}
+
+.error-info li {
+    margin-bottom: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .login-form, .dashboard, .profile, .admin-panel, .error-page {
+        padding: 20px;
+    }
+    
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .header h1 {
+        font-size: 2em;
+    }
+    
+    .info-grid, .admin-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        justify-content: center;
+    }
+    
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .avatar {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .detail-item {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .error-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+    
+    table {
+        font-size: 0.8em;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+    }
+}

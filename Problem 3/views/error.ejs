@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - Redis Session Store</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="error-page">
+            <div class="error-header">
+                <h1>⚠️ Error</h1>
+                <p>Something went wrong</p>
+            </div>
+
+            <div class="error-content">
+                <div class="error-message">
+                    <%= error %>
+                </div>
+
+                <div class="error-actions">
+                    <% if (user) { %>
+                        <a href="/dashboard" class="btn btn-primary">🏠 Go to Dashboard</a>
+                        <a href="/profile" class="btn btn-secondary">👤 View Profile</a>
+                        <% if (user.role === 'admin') { %>
+                            <a href="/admin" class="btn btn-admin">⚙️ Admin Panel</a>
+                        <% } %>
+                    <% } else { %>
+                        <a href="/login" class="btn btn-primary">🔐 Login</a>
+                    <% } %>
+                    <button onclick="history.back()" class="btn btn-secondary">← Go Back</button>
+                </div>
+            </div>
+
+            <div class="error-info">
+                <h3>🔴 Redis Session Store</h3>
+                <p>This application uses Redis for session management. If you're experiencing issues, it might be related to:</p>
+                <ul>
+                    <li>Redis server connection</li>
+                    <li>Session expiration</li>
+                    <li>Authentication timeout</li>
+                    <li>Permission restrictions</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

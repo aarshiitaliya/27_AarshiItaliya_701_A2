@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Redis Session Store</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="profile">
+            <div class="header">
+                <h1>👤 User Profile</h1>
+                <div class="breadcrumb">
+                    <a href="/dashboard">Dashboard</a> > Profile
+                </div>
+            </div>
+
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="avatar">
+                        <%= user.username.charAt(0).toUpperCase() %>
+                    </div>
+                    <div class="profile-info">
+                        <h2><%= user.username %></h2>
+                        <span class="role-badge role-<%= user.role %>"><%= user.role %></span>
+                    </div>
+                </div>
+
+                <div class="profile-details">
+                    <h3>📋 Account Details</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>User ID:</label>
+                            <span><%= user.id %></span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Username:</label>
+                            <span><%= user.username %></span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Email:</label>
+                            <span><%= user.email %></span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Role:</label>
+                            <span class="role-<%= user.role %>"><%= user.role %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="session-details">
+                    <h3>🔐 Session Details</h3>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label>Session ID:</label>
+                            <span class="session-id"><%= sessionId %></span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Session Store:</label>
+                            <span class="highlight">Redis</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Storage Location:</label>
+                            <span>Redis In-Memory Database</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Session Type:</label>
+                            <span>Server-side with Redis persistence</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="redis-info">
+                    <h3>🔴 Redis Session Benefits</h3>
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <span class="icon">⚡</span>
+                            <div>
+                                <strong>Lightning Fast</strong>
+                                <p>In-memory storage provides microsecond response times</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="icon">🔄</span>
+                            <div>
+                                <strong>Persistent Sessions</strong>
+                                <p>Sessions survive server restarts and deployments</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="icon">📈</span>
+                            <div>
+                                <strong>Horizontal Scaling</strong>
+                                <p>Multiple servers can share the same session store</p>
+                            </div>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="icon">🛡️</span>
+                            <div>
+                                <strong>Security Features</strong>
+                                <p>Built-in expiration and secure cookie handling</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <a href="/dashboard" class="btn btn-secondary">🏠 Back to Dashboard</a>
+                    <% if (user.role === 'admin') { %>
+                        <a href="/admin" class="btn btn-admin">⚙️ Admin Panel</a>
+                    <% } %>
+                    <button onclick="refreshSessionInfo()" class="btn btn-info">🔄 Refresh Session</button>
+                    <form method="POST" action="/logout" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">🚪 Logout</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshSessionInfo() {
+            fetch('/api/session')
+                .then(response => response.json())
+                .then(data => {
+                    const sessionInfo = `Current Session Information:
+
+Session ID: ${data.sessionId}
+Store: ${data.store}
+User: ${data.user.username} (${data.user.role})
+Email: ${data.user.email}
+
+Cookie Details:
+- Max Age: ${Math.round(data.cookie.maxAge / 1000 / 60)} minutes
+- Expires: ${new Date(data.cookie.expires).toLocaleString()}
+- HTTP Only: ${data.cookie.httpOnly ? 'Yes' : 'No'}
+- Secure: ${data.cookie.secure ? 'Yes' : 'No'}
+
+Session is active and stored in Redis!`;
+                    
+                    alert(sessionInfo);
+                })
+                .catch(error => {
+                    alert('Error fetching session info: ' + error.message);
+                });
+        }
+    </script>
+</body>
+</html>

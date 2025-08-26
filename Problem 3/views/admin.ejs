@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Redis Session Store</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="admin-panel">
+            <div class="header">
+                <h1>⚙️ Admin Panel</h1>
+                <div class="breadcrumb">
+                    <a href="/dashboard">Dashboard</a> > Admin Panel
+                </div>
+            </div>
+
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <h3>🔴 Redis Status</h3>
+                    <p class="status <%= redisConnected ? 'connected' : 'disconnected' %>">
+                        <%= redisConnected ? 'Connected' : 'Disconnected' %>
+                    </p>
+                </div>
+                <div class="stat-card">
+                    <h3>📊 Active Sessions</h3>
+                    <p class="count"><%= totalSessions %></p>
+                </div>
+                <div class="stat-card">
+                    <h3>💾 Storage Type</h3>
+                    <p class="highlight">Redis In-Memory</p>
+                </div>
+                <div class="stat-card">
+                    <h3>🔄 Auto-Refresh</h3>
+                    <p class="status">Every 30s</p>
+                </div>
+            </div>
+
+            <div class="admin-actions">
+                <h2>🛠️ Admin Actions</h2>
+                <div class="action-buttons">
+                    <button onclick="refreshSessions()" class="btn btn-primary">🔄 Refresh Sessions</button>
+                    <button onclick="viewRedisInfo()" class="btn btn-info">📋 Redis Info</button>
+                    <button onclick="viewAllSessions()" class="btn btn-secondary">👥 View All Sessions</button>
+                    <a href="/profile" class="btn btn-secondary">👤 My Profile</a>
+                </div>
+            </div>
+
+            <div class="sessions-table">
+                <h2>📋 Active Sessions</h2>
+                <% if (sessions.length === 0) { %>
+                    <div class="no-sessions">
+                        <p>No active sessions found in Redis.</p>
+                    </div>
+                <% } else { %>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Session ID</th>
+                                    <th>User</th>
+                                    <th>Role</th>
+                                    <th>Last Access</th>
+                                    <th>Redis Key</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% sessions.forEach(session => { %>
+                                    <tr>
+                                        <td class="session-id">
+                                            <%= session.sessionId.substring(0, 16) %>...
+                                        </td>
+                                        <td>
+                                            <% if (session.user) { %>
+                                                <strong><%= session.user.username %></strong>
+                                            <% } else { %>
+                                                <em>Anonymous</em>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (session.user) { %>
+                                                <span class="role-badge role-<%= session.user.role %>">
+                                                    <%= session.user.role %>
+                                                </span>
+                                            <% } else { %>
+                                                -
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <% if (session.lastAccess) { %>
+                                                <%= new Date(session.lastAccess).toLocaleString() %>
+                                            <% } else { %>
+                                                Unknown
+                                            <% } %>
+                                        </td>
+                                        <td class="redis-key">
+                                            <%= session.redisKey %>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge active">Active</span>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="redis-features">
+                <h2>🔴 Redis Session Management</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>⚡ Performance</h3>
+                        <p>Sub-millisecond session retrieval from in-memory storage</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🔄 Persistence</h3>
+                        <p>Sessions persist across server restarts with Redis persistence</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📈 Scalability</h3>
+                        <p>Horizontal scaling with shared Redis instance</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>⏰ TTL Management</h3>
+                        <p>Automatic session cleanup with Redis TTL</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="actions">
+                <a href="/dashboard" class="btn btn-secondary">🏠 Back to Dashboard</a>
+                <form method="POST" action="/logout" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">🚪 Logout</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshSessions() {
+            window.location.reload();
+        }
+
+        function viewAllSessions() {
+            const sessionData = JSON.parse('<%- JSON.stringify(sessions) %>');
+            
+            if (sessionData.length === 0) {
+                alert('No active sessions found in Redis');
+                return;
+            }
+            
+            let sessionList = 'Active Redis Sessions:\n\n';
+            sessionData.forEach(session => {
+                sessionList += `Session ID: ${session.sessionId}\n`;
+                sessionList += `User: ${session.user ? session.user.username : 'Anonymous'}\n`;
+                sessionList += `Role: ${session.user ? session.user.role : 'N/A'}\n`;
+                sessionList += `Redis Key: ${session.redisKey}\n`;
+                sessionList += `Last Access: ${session.lastAccess ? new Date(session.lastAccess).toLocaleString() : 'Unknown'}\n\n`;
+            });
+            
+            alert(sessionList);
+        }
+
+        function viewRedisInfo() {
+            fetch('/api/redis-info')
+                .then(response => response.json())
+                .then(data => {
+                    const info = `Redis Server Information:
+
+Connection Status: ${data.connected ? 'Connected' : 'Disconnected'}
+Database Size: ${data.dbSize} keys
+Storage Type: In-Memory with optional persistence
+
+Redis Features:
+- High-performance in-memory data structure store
+- Supports data persistence to disk
+- Built-in expiration (TTL) for automatic cleanup
+- Atomic operations for thread-safe session management
+- Horizontal scaling with Redis Cluster
+- Memory-efficient storage with compression
+
+Session Storage Benefits:
+✓ Lightning-fast session access (microseconds)
+✓ Automatic session expiration
+✓ Shared sessions across multiple servers
+✓ Persistent sessions across server restarts
+✓ Built-in data structures for complex session data`;
+                    
+                    alert(info);
+                })
+                .catch(error => {
+                    alert('Error fetching Redis info: ' + error.message);
+                });
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(() => {
+            const refreshBtn = document.querySelector('button[onclick="refreshSessions()"]');
+            if (refreshBtn) {
+                refreshBtn.textContent = 'Auto-refreshing...';
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

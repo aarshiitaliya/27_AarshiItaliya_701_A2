@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Express Session App</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h2>Session Dashboard</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="/dashboard" class="nav-link active">Dashboard</a>
+                <a href="/profile" class="nav-link">Profile</a>
+                <% if (user.role === 'admin') { %>
+                    <a href="/admin" class="nav-link">Admin</a>
+                <% } %>
+                <form action="/logout" method="POST" class="logout-form">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </nav>
+
+        <div class="dashboard-container">
+            <div class="welcome-section">
+                <h1>Welcome, <%= user.username %>!</h1>
+                <p class="welcome-text">You are successfully logged in to the Express Session Demo.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- User Info Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>User Information</h3>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-row">
+                            <span class="info-label">Username:</span>
+                            <span class="info-value"><%= user.username %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value"><%= user.email %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Role:</span>
+                            <span class="info-value role-badge role-<%= user.role %>"><%= user.role %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Login Time:</span>
+                            <span class="info-value"><%= new Date(user.loginTime).toLocaleString() %></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session Info Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Session Information</h3>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="info-row">
+                            <span class="info-label">Session ID:</span>
+                            <span class="info-value session-id"><%= sessionId %></span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Session Store:</span>
+                            <span class="info-value">File Store</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value status-active">Active</span>
+                        </div>
+                        <button onclick="loadSessionDetails()" class="btn btn-secondary">View Session Details</button>
+                    </div>
+                </div>
+
+                <!-- Quick Actions Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Quick Actions</h3>
+                        <div class="card-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="action-buttons">
+                            <a href="/profile" class="btn btn-primary">View Profile</a>
+                            <% if (user.role === 'admin') { %>
+                                <a href="/admin" class="btn btn-admin">Admin Panel</a>
+                            <% } %>
+                            <button onclick="testSession()" class="btn btn-secondary">Test Session</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Session Details Card (Initially Hidden) -->
+                <div class="card" id="sessionDetailsCard" style="display: none;">
+                    <div class="card-header">
+                        <h3>Session Details</h3>
+                        <button onclick="closeSessionDetails()" class="close-btn">&times;</button>
+                    </div>
+                    <div class="card-content">
+                        <pre id="sessionDetailsContent">Loading...</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load session details
+        async function loadSessionDetails() {
+            try {
+                const response = await fetch('/api/session');
+                const sessionData = await response.json();
+                
+                document.getElementById('sessionDetailsContent').textContent = JSON.stringify(sessionData, null, 2);
+                document.getElementById('sessionDetailsCard').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading session details:', error);
+                document.getElementById('sessionDetailsContent').textContent = 'Error loading session details';
+                document.getElementById('sessionDetailsCard').style.display = 'block';
+            }
+        }
+
+        // Close session details
+        function closeSessionDetails() {
+            document.getElementById('sessionDetailsCard').style.display = 'none';
+        }
+
+        // Test session functionality
+        async function testSession() {
+            try {
+                const response = await fetch('/api/session');
+                if (response.ok) {
+                    alert('Session is active and working correctly!');
+                } else {
+                    alert('Session test failed!');
+                }
+            } catch (error) {
+                console.error('Session test error:', error);
+                alert('Error testing session');
+            }
+        }
+
+        // Auto-refresh session status
+        setInterval(async () => {
+            try {
+                const response = await fetch('/api/session');
+                if (!response.ok) {
+                    // Session expired, redirect to login
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error('Session check error:', error);
+            }
+        }, 30000); // Check every 30 seconds
+    </script>
+</body>
+</html>

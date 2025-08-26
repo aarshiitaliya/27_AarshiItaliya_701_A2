@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error - ERP</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <% if (admin) { %>
+            <%- include('partials/navbar') %>
+        <% } %>
+        
+        <div class="main-content">
+            <div class="error-page">
+                <div class="error-header">
+                    <h1>⚠️ Error</h1>
+                    <p>Something went wrong</p>
+                </div>
+
+                <div class="error-content">
+                    <div class="error-message">
+                        <%= error %>
+                    </div>
+
+                    <div class="error-actions">
+                        <% if (admin) { %>
+                            <a href="/dashboard" class="btn btn-primary">🏠 Go to Dashboard</a>
+                            <a href="/employees" class="btn btn-secondary">👥 View Employees</a>
+                        <% } else { %>
+                            <a href="/login" class="btn btn-primary">🔐 Login</a>
+                        <% } %>
+                        <button onclick="history.back()" class="btn btn-secondary">← Go Back</button>
+                    </div>
+                </div>
+
+                <div class="error-info">
+                    <h3>🏢 ERP System</h3>
+                    <p>This application manages employee data with MongoDB. If you're experiencing issues, it might be related to:</p>
+                    <ul>
+                        <li>Database connection</li>
+                        <li>Session expiration</li>
+                        <li>Authentication timeout</li>
+                        <li>Data validation errors</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Express Session App</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h2>Session Dashboard</h2>
+            </div>
+            <div class="nav-menu">
+                <a href="/dashboard" class="nav-link">Dashboard</a>
+                <a href="/profile" class="nav-link active">Profile</a>
+                <% if (user.role === 'admin') { %>
+                    <a href="/admin" class="nav-link">Admin</a>
+                <% } %>
+                <form action="/logout" method="POST" class="logout-form">
+                    <button type="submit" class="logout-btn">Logout</button>
+                </form>
+            </div>
+        </nav>
+
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <div class="avatar-circle">
+                        <%= user.username.charAt(0).toUpperCase() %>
+                    </div>
+                </div>
+                <div class="profile-info">
+                    <h1><%= user.username %></h1>
+                    <p class="profile-role"><%= user.role %></p>
+                    <p class="profile-email"><%= user.email %></p>
+                </div>
+            </div>
+
+            <div class="profile-content">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Account Information</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="profile-details">
+                            <div class="detail-row">
+                                <label>User ID:</label>
+                                <span><%= user.id %></span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Username:</label>
+                                <span><%= user.username %></span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Email:</label>
+                                <span><%= user.email %></span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Role:</label>
+                                <span class="role-badge role-<%= user.role %>"><%= user.role %></span>
+                            </div>
+                            <div class="detail-row">
+                                <label>Last Login:</label>
+                                <span><%= new Date(user.loginTime).toLocaleString() %></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Session Activity</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="activity-item">
+                            <div class="activity-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                    <polyline points="16,17 21,12 16,7"></polyline>
+                                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                                </svg>
+                            </div>
+                            <div class="activity-content">
+                                <h4>Login Activity</h4>
+                                <p>Logged in at <%= new Date(user.loginTime).toLocaleString() %></p>
+                                <small>Session stored in file system</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Account Actions</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="action-buttons">
+                            <button onclick="refreshProfile()" class="btn btn-primary">Refresh Profile</button>
+                            <button onclick="viewSessionInfo()" class="btn btn-secondary">View Session Info</button>
+                            <form action="/logout" method="POST" style="display: inline;">
+                                <button type="submit" class="btn btn-danger">Logout</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshProfile() {
+            window.location.reload();
+        }
+
+        async function viewSessionInfo() {
+            try {
+                const response = await fetch('/api/session');
+                const sessionData = await response.json();
+                
+                const info = `Session Information:
+                
+Session ID: ${sessionData.sessionId}
+User: ${sessionData.user.username}
+Role: ${sessionData.user.role}
+Login Time: ${new Date(sessionData.user.loginTime).toLocaleString()}
+Cookie Max Age: ${sessionData.cookie.maxAge}ms
+Cookie Expires: ${new Date(sessionData.cookie.expires).toLocaleString()}`;
+                
+                alert(info);
+            } catch (error) {
+                console.error('Error fetching session info:', error);
+                alert('Error fetching session information');
+            }
+        }
+    </script>
+</body>
+</html>

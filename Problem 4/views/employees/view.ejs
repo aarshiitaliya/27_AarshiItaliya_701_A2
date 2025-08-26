@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Details - ERP</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <%- include('../partials/navbar') %>
+        
+        <div class="main-content">
+            <div class="employee-view">
+                <div class="page-header">
+                    <h1>👤 Employee Details</h1>
+                    <div class="header-actions">
+                        <a href="/employees/edit/<%= employee._id %>" class="btn btn-warning">✏️ Edit</a>
+                        <a href="/employees" class="btn btn-secondary">← Back to List</a>
+                    </div>
+                </div>
+
+                <div class="employee-profile">
+                    <div class="profile-header">
+                        <div class="profile-avatar">
+                            <%= employee.firstName.charAt(0) + employee.lastName.charAt(0) %>
+                        </div>
+                        <div class="profile-info">
+                            <h2><%= employee.fullName %></h2>
+                            <p class="emp-id"><%= employee.empId %></p>
+                            <span class="dept-badge dept-<%= employee.department.toLowerCase() %>">
+                                <%= employee.department %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="profile-sections">
+                        <div class="section">
+                            <h3>📋 Personal Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Full Name:</label>
+                                    <span><%= employee.fullName %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Employee ID:</label>
+                                    <span><%= employee.empId %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Email:</label>
+                                    <span><%= employee.email %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Phone:</label>
+                                    <span><%= employee.phone %></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h3>🏢 Job Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Department:</label>
+                                    <span><%= employee.department %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Position:</label>
+                                    <span><%= employee.position %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Joining Date:</label>
+                                    <span><%= new Date(employee.joiningDate).toLocaleDateString() %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Years of Service:</label>
+                                    <span><%= employee.yearsOfService %> years</span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Status:</label>
+                                    <span class="status <%= employee.isActive ? 'active' : 'inactive' %>">
+                                        <%= employee.isActive ? 'Active' : 'Inactive' %>
+                                    </span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Created By:</label>
+                                    <span><%= employee.createdBy %></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h3>💰 Salary Information</h3>
+                            <div class="salary-details">
+                                <div class="salary-breakdown">
+                                    <div class="salary-section">
+                                        <h4>Base Salary</h4>
+                                        <div class="salary-amount base">₹<%= employee.baseSalary.toLocaleString() %></div>
+                                    </div>
+
+                                    <div class="salary-section">
+                                        <h4>Allowances</h4>
+                                        <div class="allowance-list">
+                                            <div class="allowance-item">
+                                                <span>HRA:</span>
+                                                <span>₹<%= employee.allowances.hra.toLocaleString() %></span>
+                                            </div>
+                                            <div class="allowance-item">
+                                                <span>Transport:</span>
+                                                <span>₹<%= employee.allowances.transport.toLocaleString() %></span>
+                                            </div>
+                                            <div class="allowance-item">
+                                                <span>Medical:</span>
+                                                <span>₹<%= employee.allowances.medical.toLocaleString() %></span>
+                                            </div>
+                                            <div class="allowance-item">
+                                                <span>Other:</span>
+                                                <span>₹<%= employee.allowances.other.toLocaleString() %></span>
+                                            </div>
+                                        </div>
+                                        <div class="total-allowances">
+                                            Total: ₹<%= employee.totalAllowances.toLocaleString() %>
+                                        </div>
+                                    </div>
+
+                                    <div class="salary-section">
+                                        <h4>Deductions</h4>
+                                        <div class="deduction-list">
+                                            <div class="deduction-item">
+                                                <span>PF:</span>
+                                                <span>₹<%= employee.deductions.pf.toLocaleString() %></span>
+                                            </div>
+                                            <div class="deduction-item">
+                                                <span>Tax:</span>
+                                                <span>₹<%= employee.deductions.tax.toLocaleString() %></span>
+                                            </div>
+                                            <div class="deduction-item">
+                                                <span>Insurance:</span>
+                                                <span>₹<%= employee.deductions.insurance.toLocaleString() %></span>
+                                            </div>
+                                            <div class="deduction-item">
+                                                <span>Other:</span>
+                                                <span>₹<%= employee.deductions.other.toLocaleString() %></span>
+                                            </div>
+                                        </div>
+                                        <div class="total-deductions">
+                                            Total: ₹<%= employee.totalDeductions.toLocaleString() %>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="salary-summary">
+                                    <div class="summary-item gross">
+                                        <label>Gross Salary:</label>
+                                        <span>₹<%= employee.grossSalary.toLocaleString() %></span>
+                                    </div>
+                                    <div class="summary-item net">
+                                        <label>Net Salary:</label>
+                                        <span>₹<%= employee.netSalary.toLocaleString() %></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h3>📊 System Information</h3>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <label>Created:</label>
+                                    <span><%= new Date(employee.createdAt).toLocaleString() %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Last Updated:</label>
+                                    <span><%= new Date(employee.updatedAt).toLocaleString() %></span>
+                                </div>
+                                <div class="info-item">
+                                    <label>Database ID:</label>
+                                    <span class="db-id"><%= employee._id %></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-actions">
+                        <a href="/employees/edit/<%= employee._id %>" class="btn btn-primary">✏️ Edit Employee</a>
+                        <form method="POST" action="/employees/delete/<%= employee._id %>" style="display: inline;" 
+                              onsubmit="return confirm('Are you sure you want to delete this employee?')">
+                            <button type="submit" class="btn btn-danger">🗑️ Delete Employee</button>
+                        </form>
+                        <a href="/employees" class="btn btn-secondary">← Back to Employees</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
