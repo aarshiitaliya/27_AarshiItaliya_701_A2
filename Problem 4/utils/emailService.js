@@ -1,11 +1,13 @@
 const nodemailer = require('nodemailer');
 
+require('dotenv').config();
+
 // Email configuration
 const emailConfig = {
-    service: 'gmail', // You can change this to your preferred service
+    service: 'gmail',
     auth: {
-        user: process.env.EMAIL_USER || 'your-email@gmail.com', // Replace with your email
-        pass: process.env.EMAIL_PASS || 'your-app-password'     // Replace with your app password
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
     }
 };
 

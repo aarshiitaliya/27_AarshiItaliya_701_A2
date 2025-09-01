@@ -1,0 +1,132 @@
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">All Products</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold">
+                    <i class="fas fa-box me-2"></i>All Products
+                </h2>
+                <div class="d-flex gap-2">
+                    <select class="form-select form-select-sm" id="sortSelect">
+                        <option value="name">Sort by Name</option>
+                        <option value="price_low">Price: Low to High</option>
+                        <option value="price_high">Price: High to Low</option>
+                        <option value="newest">Newest First</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <% if (products && products.length > 0) { %>
+        <div class="row g-4">
+            <% products.forEach(product => { %>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card product-card h-100">
+                        <% if (product.images && product.images.length > 0) { %>
+                            <img src="<%= product.images[0].url || product.images[0] %>" 
+                                 class="card-img-top" 
+                                 alt="<%= product.name %>"
+                                 style="height: 200px; object-fit: cover;">
+                        <% } else { %>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas fa-box display-4 text-muted"></i>
+                            </div>
+                        <% } %>
+                        
+                        <% if (product.comparePrice && product.comparePrice > product.price) { %>
+                            <div class="product-discount">
+                                <%= Math.round(((product.comparePrice - product.price) / product.comparePrice) * 100) %>% OFF
+                            </div>
+                        <% } %>
+                        
+                        <div class="card-body">
+                            <h6 class="product-title">
+                                <a href="/products/<%= product.slug %>" class="text-decoration-none">
+                                    <%= product.name %>
+                                </a>
+                            </h6>
+                            
+                            <% if (product.shortDescription) { %>
+                                <p class="text-muted small mb-2">
+                                    <%= product.shortDescription.substring(0, 80) %>
+                                    <% if (product.shortDescription.length > 80) { %>...<%}%>
+                                </p>
+                            <% } %>
+                            
+                            <div class="product-rating mb-2">
+                                <% for (let i = 1; i <= 5; i++) { %>
+                                    <i class="fas fa-star <%= i <= (product.ratings?.average || 0) ? 'text-warning' : 'text-muted' %>"></i>
+                                <% } %>
+                                <small class="text-muted ms-1">
+                                    (<%= product.ratings?.count || 0 %>)
+                                </small>
+                            </div>
+                            
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div>
+                                    <span class="product-price fw-bold">₹<%= product.price.toLocaleString('en-IN') %></span>
+                                    <% if (product.comparePrice && product.comparePrice > product.price) { %>
+                                        <small class="product-original-price text-muted text-decoration-line-through ms-1">
+                                            ₹<%= product.comparePrice.toLocaleString('en-IN') %>
+                                        </small>
+                                    <% } %>
+                                </div>
+                                <% if (product.inventory?.quantity > 0) { %>
+                                    <span class="badge bg-success">In Stock</span>
+                                <% } else { %>
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                <% } %>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <% if (product.inventory?.quantity > 0) { %>
+                                    <button class="btn btn-primary add-to-cart-btn" 
+                                            data-product-id="<%= product._id %>">
+                                        <i class="fas fa-shopping-cart me-1"></i>Add to Cart
+                                    </button>
+                                <% } else { %>
+                                    <button class="btn btn-secondary" disabled>
+                                        <i class="fas fa-times me-1"></i>Out of Stock
+                                    </button>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open display-1 text-muted mb-4"></i>
+                    <h3 class="text-muted">No Products Available</h3>
+                    <p class="text-muted">Products will appear here once they are added by the administrator.</p>
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-home me-1"></i>Go to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<script>
+// Sort functionality
+document.getElementById('sortSelect')?.addEventListener('change', function() {
+    const sortBy = this.value;
+    const url = new URL(window.location);
+    url.searchParams.set('sort', sortBy);
+    window.location.href = url.toString();
+});
+</script>

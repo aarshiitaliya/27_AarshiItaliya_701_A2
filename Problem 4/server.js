@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -183,6 +184,7 @@ app.get('/employees', requireAuth, async (req, res) => {
         const skip = (page - 1) * limit;
 
         const employees = await Employee.find({ isActive: true })
+            .select('+tempPassword')  // Include the temporary password field
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
@@ -195,7 +197,8 @@ app.get('/employees', requireAuth, async (req, res) => {
             employees,
             currentPage: page,
             totalPages,
-            totalEmployees
+            totalEmployees,
+            query: req.query
         });
     } catch (error) {
         console.error('Employees list error:', error);
@@ -263,18 +266,16 @@ app.post('/employees/add', requireAuth, [
                 other: parseFloat(req.body.otherDeduction) || 0
             },
             password: plainPassword,
+            tempPassword: plainPassword,  // Store the plain text password temporarily
             createdBy: req.session.admin.username
         });
 
         await employee.save();
-
-        // Send welcome email
-        const emailResult = await sendWelcomeEmail(employee, plainPassword);
         
         res.render('employees/add', {
             admin: req.session.admin,
             error: null,
-            success: `Employee ${empId} created successfully! ${emailResult.success ? 'Welcome email sent.' : 'Email sending failed.'}`,
+            success: `Employee created successfully! Employee ID: ${empId}, Password: ${plainPassword} (Please save these credentials)`,
             formData: {}
         });
     } catch (error) {

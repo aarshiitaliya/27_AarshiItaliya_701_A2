@@ -1,0 +1,263 @@
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">
+                <i class="fas fa-folder me-2"></i>Category Management
+            </h2>
+            <a href="/admin/categories/create" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Add Category
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Category Stats -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-bold mb-1"><%= stats.total %></h4>
+                        <p class="mb-0">Total Categories</p>
+                    </div>
+                    <i class="fas fa-folder display-5 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-bold mb-1"><%= stats.parent %></h4>
+                        <p class="mb-0">Parent Categories</p>
+                    </div>
+                    <i class="fas fa-folder-open display-5 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="fw-bold mb-1"><%= stats.child %></h4>
+                        <p class="mb-0">Subcategories</p>
+                    </div>
+                    <i class="fas fa-folder display-5 opacity-50"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Categories Table -->
+<div class="card">
+    <div class="card-header">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5 class="mb-0">All Categories</h5>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex gap-2">
+                    <select class="form-select form-select-sm" id="statusFilter">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                    <select class="form-select form-select-sm" id="typeFilter">
+                        <option value="">All Types</option>
+                        <option value="parent">Parent Categories</option>
+                        <option value="child">Subcategories</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <% if (categories.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Parent</th>
+                            <th>Products</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% categories.forEach(category => { %>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <% if (category.image) { %>
+                                            <img src="<%= category.image %>" 
+                                                 alt="<%= category.name %>" 
+                                                 class="admin-category-thumb me-2">
+                                        <% } else { %>
+                                            <div class="admin-category-thumb bg-light d-flex align-items-center justify-content-center me-2">
+                                                <i class="fas fa-folder text-muted"></i>
+                                            </div>
+                                        <% } %>
+                                        <div>
+                                            <h6 class="mb-0"><%= category.name %></h6>
+                                            <small class="text-muted">/<%= category.slug %></small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <% if (category.parent) { %>
+                                        <span class="badge bg-info">Subcategory</span>
+                                    <% } else { %>
+                                        <span class="badge bg-primary">Parent</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <% if (category.parent) { %>
+                                        <span class="text-muted"><%= category.parent.name %></span>
+                                    <% } else { %>
+                                        <span class="text-muted">-</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary"><%= category.productCount || 0 %></span>
+                                </td>
+                                <td>
+                                    <% if (category.isActive) { %>
+                                        <span class="badge bg-success">Active</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger">Inactive</span>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <small class="text-muted">
+                                        <%= new Date(category.createdAt).toLocaleDateString() %>
+                                    </small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/admin/categories/<%= category._id %>/edit" 
+                                           class="btn btn-outline-primary" 
+                                           title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <% if (!category.parent) { %>
+                                            <a href="/admin/categories/create?parent=<%= category._id %>" 
+                                               class="btn btn-outline-success" 
+                                               title="Add Subcategory">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                        <% } %>
+                                        <button class="btn btn-outline-danger delete-category-btn" 
+                                                data-category-id="<%= category._id %>"
+                                                data-category-name="<%= category.name %>"
+                                                title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <div class="text-center py-5">
+                <i class="fas fa-folder display-1 text-muted mb-3"></i>
+                <h4 class="text-muted">No categories found</h4>
+                <p class="text-muted">Start by creating your first category to organize your products.</p>
+                <a href="/admin/categories/create" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>Create Category
+                </a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteCategoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Confirm Delete
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the category <strong id="categoryNameToDelete"></strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    This action cannot be undone. All products in this category will be moved to uncategorized.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteCategoryForm" method="POST" style="display: inline;">
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i>Delete Category
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Delete category functionality
+document.querySelectorAll('.delete-category-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const categoryId = this.dataset.categoryId;
+        const categoryName = this.dataset.categoryName;
+        
+        document.getElementById('categoryNameToDelete').textContent = categoryName;
+        document.getElementById('deleteCategoryForm').action = `/admin/categories/${categoryId}`;
+        
+        new bootstrap.Modal(document.getElementById('deleteCategoryModal')).show();
+    });
+});
+
+// Filter functionality
+document.getElementById('statusFilter').addEventListener('change', filterCategories);
+document.getElementById('typeFilter').addEventListener('change', filterCategories);
+
+function filterCategories() {
+    const statusFilter = document.getElementById('statusFilter').value;
+    const typeFilter = document.getElementById('typeFilter').value;
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        let showRow = true;
+        
+        // Status filter
+        if (statusFilter) {
+            const statusBadge = row.querySelector('td:nth-child(5) .badge');
+            const status = statusBadge.textContent.toLowerCase();
+            if (status !== statusFilter) {
+                showRow = false;
+            }
+        }
+        
+        // Type filter
+        if (typeFilter && showRow) {
+            const typeBadge = row.querySelector('td:nth-child(2) .badge');
+            const type = typeBadge.textContent.toLowerCase();
+            if ((typeFilter === 'parent' && type !== 'parent') ||
+                (typeFilter === 'child' && type !== 'subcategory')) {
+                showRow = false;
+            }
+        }
+        
+        row.style.display = showRow ? '' : 'none';
+    });
+}
+</script>

@@ -1,0 +1,401 @@
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/categories">Categories</a></li>
+            <% if (product.category) { %>
+                <li class="breadcrumb-item">
+                    <a href="/categories/<%= product.category.slug %>"><%= product.category.name %></a>
+                </li>
+            <% } %>
+            <li class="breadcrumb-item active"><%= product.name %></li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Images -->
+        <div class="col-lg-6">
+            <div class="product-images">
+                <% if (product.images && product.images.length > 0) { %>
+                    <!-- Main Image -->
+                    <div class="main-image mb-3">
+                        <img src="<%= product.images[0] %>" 
+                             alt="<%= product.name %>" 
+                             class="img-fluid rounded shadow"
+                             id="mainProductImage"
+                             style="width: 100%; height: 400px; object-fit: cover;">
+                    </div>
+                    
+                    <!-- Thumbnail Images -->
+                    <% if (product.images.length > 1) { %>
+                        <div class="thumbnail-images">
+                            <div class="row g-2">
+                                <% product.images.forEach((image, index) => { %>
+                                    <div class="col-3">
+                                        <img src="<%= image %>" 
+                                             alt="<%= product.name %> - Image <%= index + 1 %>" 
+                                             class="img-fluid rounded thumbnail-img <%= index === 0 ? 'active' : '' %>"
+                                             style="height: 80px; object-fit: cover; cursor: pointer;"
+                                             onclick="changeMainImage('<%= image %>', this)">
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                         style="height: 400px;">
+                        <i class="fas fa-image display-1 text-muted"></i>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-lg-6">
+            <div class="product-details">
+                <h1 class="product-title mb-3"><%= product.name %></h1>
+                
+                <!-- Rating -->
+                <div class="product-rating mb-3">
+                    <% for (let i = 1; i <= 5; i++) { %>
+                        <i class="fas fa-star <%= i <= (product.averageRating || 0) ? 'text-warning' : 'text-muted' %>"></i>
+                    <% } %>
+                    <span class="ms-2 text-muted">
+                        (<%= product.reviewCount || 0 %> reviews)
+                    </span>
+                </div>
+
+                <!-- Price -->
+                <div class="product-pricing mb-4">
+                    <span class="product-price h3 text-primary fw-bold">
+                        ₹<%= product.price.toLocaleString('en-IN') %>
+                    </span>
+                    <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                        <span class="product-original-price text-muted text-decoration-line-through ms-2">
+                            ₹<%= product.originalPrice.toLocaleString('en-IN') %>
+                        </span>
+                        <span class="badge bg-danger ms-2">
+                            <%= Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) %>% OFF
+                        </span>
+                    <% } %>
+                </div>
+
+                <!-- Stock Status -->
+                <div class="stock-status mb-3">
+                    <% if (product.inventory && product.inventory.quantity > 0) { %>
+                        <span class="badge bg-success">
+                            <i class="fas fa-check me-1"></i>In Stock (<%= product.inventory.quantity %> available)
+                        </span>
+                    <% } else { %>
+                        <span class="badge bg-danger">
+                            <i class="fas fa-times me-1"></i>Out of Stock
+                        </span>
+                    <% } %>
+                </div>
+
+                <!-- Description -->
+                <% if (product.description) { %>
+                    <div class="product-description mb-4">
+                        <h5>Description</h5>
+                        <p class="text-muted"><%= product.description %></p>
+                    </div>
+                <% } %>
+
+                <!-- Specifications -->
+                <% if (product.specifications && Object.keys(product.specifications).length > 0) { %>
+                    <div class="product-specifications mb-4">
+                        <h5>Specifications</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <% Object.entries(product.specifications).forEach(([key, value]) => { %>
+                                    <tr>
+                                        <td class="fw-medium"><%= key %></td>
+                                        <td><%= value %></td>
+                                    </tr>
+                                <% }); %>
+                            </table>
+                        </div>
+                    </div>
+                <% } %>
+
+                <!-- Variants -->
+                <% if (product.variants && product.variants.length > 0) { %>
+                    <div class="product-variants mb-4">
+                        <h5>Available Options</h5>
+                        <% product.variants.forEach(variant => { %>
+                            <div class="mb-3">
+                                <label class="form-label fw-medium"><%= variant.name %></label>
+                                <div class="d-flex flex-wrap gap-2">
+                                    <% variant.options.forEach(option => { %>
+                                        <button type="button" 
+                                                class="btn btn-outline-secondary variant-option"
+                                                data-variant="<%= variant.name %>"
+                                                data-option="<%= option %>">
+                                            <%= option %>
+                                        </button>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+
+                <!-- Quantity and Add to Cart -->
+                <div class="product-actions">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <label class="form-label fw-medium">Quantity:</label>
+                        </div>
+                        <div class="col-auto">
+                            <div class="quantity-controls">
+                                <button type="button" class="btn btn-outline-secondary quantity-decrease">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <input type="number" 
+                                       class="form-control quantity-input" 
+                                       value="1" 
+                                       min="1" 
+                                       max="<%= product.inventory ? product.inventory.quantity : 10 %>"
+                                       style="width: 80px; text-align: center;">
+                                <button type="button" class="btn btn-outline-secondary quantity-increase">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <% if (product.inventory && product.inventory.quantity > 0) { %>
+                                <button class="btn btn-primary btn-lg add-to-cart-btn" 
+                                        data-product-id="<%= product._id %>">
+                                    <i class="fas fa-shopping-cart me-2"></i>Add to Cart
+                                </button>
+                                <button class="btn btn-outline-danger btn-lg ms-2 wishlist-btn" 
+                                        data-product-id="<%= product._id %>">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            <% } else { %>
+                                <button class="btn btn-secondary btn-lg" disabled>
+                                    <i class="fas fa-times me-2"></i>Out of Stock
+                                </button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Features -->
+                <% if (product.features && product.features.length > 0) { %>
+                    <div class="product-features mt-4">
+                        <h5>Key Features</h5>
+                        <ul class="list-unstyled">
+                            <% product.features.forEach(feature => { %>
+                                <li class="mb-2">
+                                    <i class="fas fa-check-circle text-success me-2"></i>
+                                    <%= feature %>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    </div>
+                <% } %>
+
+                <!-- Shipping Info -->
+                <% if (product.shipping) { %>
+                    <div class="shipping-info mt-4">
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title">
+                                    <i class="fas fa-shipping-fast me-2"></i>Shipping Information
+                                </h6>
+                                <div class="row g-2">
+                                    <% if (product.shipping.freeShipping) { %>
+                                        <div class="col-12">
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-gift me-1"></i>Free Shipping
+                                            </span>
+                                        </div>
+                                    <% } %>
+                                    <% if (product.shipping.weight) { %>
+                                        <div class="col-6">
+                                            <small class="text-muted">Weight: <%= product.shipping.weight %>kg</small>
+                                        </div>
+                                    <% } %>
+                                    <% if (product.shipping.dimensions) { %>
+                                        <div class="col-6">
+                                            <small class="text-muted">
+                                                Dimensions: <%= product.shipping.dimensions.length %>×<%= product.shipping.dimensions.width %>×<%= product.shipping.dimensions.height %>cm
+                                            </small>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    <% if (relatedProducts && relatedProducts.length > 0) { %>
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-heart me-2"></i>You May Also Like
+                </h3>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <% relatedProducts.slice(0, 4).forEach(relatedProduct => { %>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card product-card h-100">
+                        <% if (relatedProduct.images && relatedProduct.images.length > 0) { %>
+                            <img src="<%= relatedProduct.images[0] %>" 
+                                 class="card-img-top" 
+                                 alt="<%= relatedProduct.name %>"
+                                 style="height: 200px; object-fit: cover;">
+                        <% } else { %>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas fa-box display-4 text-muted"></i>
+                            </div>
+                        <% } %>
+                        
+                        <div class="card-body">
+                            <h6 class="product-title">
+                                <a href="/products/<%= relatedProduct.slug %>" class="text-decoration-none">
+                                    <%= relatedProduct.name %>
+                                </a>
+                            </h6>
+                            
+                            <div class="d-flex align-items-center justify-content-between">
+                                <span class="product-price">₹<%= relatedProduct.price.toLocaleString('en-IN') %></span>
+                                <button class="btn btn-primary btn-sm add-to-cart-btn" 
+                                        data-product-id="<%= relatedProduct._id %>">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
+
+<script>
+// Change main product image
+function changeMainImage(imageSrc, thumbnail) {
+    document.getElementById('mainProductImage').src = imageSrc;
+    
+    // Update active thumbnail
+    document.querySelectorAll('.thumbnail-img').forEach(img => {
+        img.classList.remove('active');
+    });
+    thumbnail.classList.add('active');
+}
+
+// Quantity controls
+document.addEventListener('DOMContentLoaded', function() {
+    const quantityInput = document.querySelector('.quantity-input');
+    const decreaseBtn = document.querySelector('.quantity-decrease');
+    const increaseBtn = document.querySelector('.quantity-increase');
+    const addToCartBtn = document.querySelector('.add-to-cart-btn');
+
+    decreaseBtn.addEventListener('click', function() {
+        const currentValue = parseInt(quantityInput.value);
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+        }
+    });
+
+    increaseBtn.addEventListener('click', function() {
+        const currentValue = parseInt(quantityInput.value);
+        const maxValue = parseInt(quantityInput.max);
+        if (currentValue < maxValue) {
+            quantityInput.value = currentValue + 1;
+        }
+    });
+
+    // Update add to cart button with quantity
+    if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const quantity = parseInt(quantityInput.value);
+            this.dataset.quantity = quantity;
+            
+            // Trigger the main add to cart function
+            if (window.ShoppingCart && window.ShoppingCart.addToCart) {
+                window.ShoppingCart.addToCart(e);
+            }
+        });
+    }
+
+    // Variant selection
+    document.querySelectorAll('.variant-option').forEach(button => {
+        button.addEventListener('click', function() {
+            const variantGroup = this.dataset.variant;
+            
+            // Remove active class from other options in the same variant group
+            document.querySelectorAll(`[data-variant="${variantGroup}"]`).forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-secondary');
+            });
+            
+            // Add active class to selected option
+            this.classList.remove('btn-outline-secondary');
+            this.classList.add('btn-primary');
+        });
+    });
+});
+</script>
+
+<style>
+.thumbnail-img {
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.thumbnail-img.active,
+.thumbnail-img:hover {
+    border-color: var(--bs-primary);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-controls button {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.variant-option {
+    transition: all 0.3s ease;
+}
+
+.product-images {
+    position: sticky;
+    top: 20px;
+}
+
+@media (max-width: 768px) {
+    .product-images {
+        position: static;
+        margin-bottom: 2rem;
+    }
+    
+    .quantity-controls {
+        justify-content: center;
+    }
+    
+    .product-actions .row {
+        text-align: center;
+    }
+}
+</style>

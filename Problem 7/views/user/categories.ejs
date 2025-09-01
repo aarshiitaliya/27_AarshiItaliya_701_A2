@@ -1,0 +1,207 @@
+<div class="container-fluid py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item active">Categories</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-12">
+            <h2 class="fw-bold mb-4">
+                <i class="fas fa-th-large me-2"></i>Shop by Category
+            </h2>
+        </div>
+    </div>
+
+    <!-- Parent Categories -->
+    <% if (parentCategories && parentCategories.length > 0) { %>
+        <div class="row g-4 mb-5">
+            <% parentCategories.forEach(category => { %>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card category-card h-100">
+                        <% if (category.image) { %>
+                            <img src="<%= category.image %>" 
+                                 class="card-img-top" 
+                                 alt="<%= category.name %>"
+                                 style="height: 200px; object-fit: cover;">
+                        <% } else { %>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas fa-folder display-4 text-muted"></i>
+                            </div>
+                        <% } %>
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><%= category.name %></h5>
+                            <% if (category.description) { %>
+                                <p class="card-text text-muted">
+                                    <%= category.description.substring(0, 100) %>
+                                    <% if (category.description.length > 100) { %>...<%}%>
+                                </p>
+                            <% } %>
+                            <div class="mb-3">
+                                <span class="badge bg-primary">
+                                    <%= category.productCount || 0 %> Products
+                                </span>
+                                <% if (category.subcategories && category.subcategories.length > 0) { %>
+                                    <span class="badge bg-secondary">
+                                        <%= category.subcategories.length %> Subcategories
+                                    </span>
+                                <% } %>
+                            </div>
+                            <a href="/categories/<%= category.slug %>" class="btn btn-primary">
+                                <i class="fas fa-arrow-right me-1"></i>Explore
+                            </a>
+                        </div>
+                        
+                        <!-- Subcategories -->
+                        <% if (category.subcategories && category.subcategories.length > 0) { %>
+                            <div class="card-footer bg-light">
+                                <h6 class="mb-2">Subcategories:</h6>
+                                <div class="d-flex flex-wrap gap-1">
+                                    <% category.subcategories.forEach(sub => { %>
+                                        <a href="/categories/<%= sub.slug %>" 
+                                           class="badge bg-outline-secondary text-decoration-none">
+                                            <%= sub.name %>
+                                        </a>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+
+    <!-- All Categories (if no parent categories) -->
+    <% if ((!parentCategories || parentCategories.length === 0) && categories && categories.length > 0) { %>
+        <div class="row g-4">
+            <% categories.forEach(category => { %>
+                <div class="col-lg-3 col-md-4 col-sm-6">
+                    <div class="card category-card h-100">
+                        <% if (category.image) { %>
+                            <img src="<%= category.image %>" 
+                                 class="card-img-top" 
+                                 alt="<%= category.name %>"
+                                 style="height: 200px; object-fit: cover;">
+                        <% } else { %>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas fa-folder display-4 text-muted"></i>
+                            </div>
+                        <% } %>
+                        <div class="card-body text-center">
+                            <h5 class="card-title"><%= category.name %></h5>
+                            <% if (category.description) { %>
+                                <p class="card-text text-muted">
+                                    <%= category.description.substring(0, 100) %>
+                                    <% if (category.description.length > 100) { %>...<%}%>
+                                </p>
+                            <% } %>
+                            <div class="mb-3">
+                                <span class="badge bg-primary">
+                                    <%= category.productCount || 0 %> Products
+                                </span>
+                                <% if (category.parent) { %>
+                                    <span class="badge bg-info">
+                                        <%= category.parent.name %>
+                                    </span>
+                                <% } %>
+                            </div>
+                            <a href="/categories/<%= category.slug %>" class="btn btn-primary">
+                                <i class="fas fa-arrow-right me-1"></i>Shop Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+
+    <!-- Empty State -->
+    <% if ((!categories || categories.length === 0) && (!parentCategories || parentCategories.length === 0)) { %>
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-folder-open display-1 text-muted mb-4"></i>
+                    <h3 class="text-muted">No Categories Available</h3>
+                    <p class="text-muted">Categories will appear here once they are added by the administrator.</p>
+                    <a href="/" class="btn btn-primary">
+                        <i class="fas fa-home me-1"></i>Go to Homepage
+                    </a>
+                </div>
+            </div>
+        </div>
+    <% } %>
+
+    <!-- Featured Products Section -->
+    <% if (featuredProducts && featuredProducts.length > 0) { %>
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="fw-bold mb-4">
+                    <i class="fas fa-star me-2"></i>Featured Products
+                </h3>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <% featuredProducts.slice(0, 4).forEach(product => { %>
+                <div class="col-lg-3 col-md-6">
+                    <div class="card product-card h-100">
+                        <% if (product.images && product.images.length > 0) { %>
+                            <img src="<%= product.images[0] %>" 
+                                 class="card-img-top" 
+                                 alt="<%= product.name %>"
+                                 style="height: 200px; object-fit: cover;">
+                        <% } else { %>
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                 style="height: 200px;">
+                                <i class="fas fa-box display-4 text-muted"></i>
+                            </div>
+                        <% } %>
+                        
+                        <% if (product.discount && product.discount > 0) { %>
+                            <div class="product-discount">
+                                <%= product.discount %>% OFF
+                            </div>
+                        <% } %>
+                        
+                        <div class="card-body">
+                            <h6 class="product-title">
+                                <a href="/products/<%= product.slug %>" class="text-decoration-none">
+                                    <%= product.name %>
+                                </a>
+                            </h6>
+                            
+                            <div class="product-rating mb-2">
+                                <% for (let i = 1; i <= 5; i++) { %>
+                                    <i class="fas fa-star <%= i <= (product.averageRating || 0) ? 'text-warning' : 'text-muted' %>"></i>
+                                <% } %>
+                                <small class="text-muted ms-1">
+                                    (<%= product.reviewCount || 0 %>)
+                                </small>
+                            </div>
+                            
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div>
+                                    <span class="product-price">₹<%= product.price.toLocaleString('en-IN') %></span>
+                                    <% if (product.originalPrice && product.originalPrice > product.price) { %>
+                                        <small class="product-original-price ms-1">
+                                            ₹<%= product.originalPrice.toLocaleString('en-IN') %>
+                                        </small>
+                                    <% } %>
+                                </div>
+                                <button class="btn btn-primary btn-sm add-to-cart-btn" 
+                                        data-product-id="<%= product._id %>">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</div>

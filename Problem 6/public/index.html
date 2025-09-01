@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather & Utility APIs - Problem 6</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌤️ Weather & Utility APIs</h1>
+            <p>Demonstrating Frontend and Backend API Integration</p>
+        </div>
+
+        <!-- API Source Toggle -->
+        <div class="api-toggle">
+            <button class="toggle-btn active" id="backendToggle">Backend API Calls</button>
+            <button class="toggle-btn" id="frontendToggle">Frontend API Calls</button>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Weather Section -->
+        <div class="card">
+            <h2>🌍 Weather Information <span class="api-source" id="weatherSource">via Backend</span></h2>
+            
+            <div class="weather-controls">
+                <div class="input-group">
+                    <input type="text" id="cityInput" class="form-control" placeholder="Enter city name (e.g., Mumbai, London)">
+                    <button class="btn" id="searchCityBtn">
+                        <span>🔍 Search</span>
+                        <div class="spinner" id="citySpinner" style="display: none;"></div>
+                    </button>
+                </div>
+                
+                <div class="input-group">
+                    <button class="btn btn-secondary" id="getCurrentLocationBtn">
+                        <span>📍 Current Location</span>
+                        <div class="spinner" id="locationSpinner" style="display: none;"></div>
+                    </button>
+                </div>
+            </div>
+
+            <div class="weather-display" id="weatherDisplay">
+                <div class="weather-main">
+                    <div class="weather-info">
+                        <h3 id="cityName">-</h3>
+                        <div class="weather-temp" id="temperature">-°C</div>
+                        <div class="weather-desc" id="description">-</div>
+                    </div>
+                    <div class="weather-icon" id="weatherIcon">☀️</div>
+                </div>
+                
+                <div class="weather-details">
+                    <div class="weather-detail">
+                        <div class="weather-detail-label">Feels Like</div>
+                        <div class="weather-detail-value" id="feelsLike">-°C</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="weather-detail-label">Humidity</div>
+                        <div class="weather-detail-value" id="humidity">-%</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="weather-detail-label">Wind Speed</div>
+                        <div class="weather-detail-value" id="windSpeed">- m/s</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="weather-detail-label">Pressure</div>
+                        <div class="weather-detail-value" id="pressure">- hPa</div>
+                    </div>
+                    <div class="weather-detail">
+                        <div class="weather-detail-label">Visibility</div>
+                        <div class="weather-detail-value" id="visibility">- km</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utility APIs Section -->
+        <div class="utility-grid">
+            <!-- Random Quote -->
+            <div class="card">
+                <h2>💭 Daily Quote <span class="api-source" id="quoteSource">via Backend</span></h2>
+                <button class="btn" id="getQuoteBtn">
+                    <span>✨ Get Random Quote</span>
+                    <div class="spinner" id="quoteSpinner" style="display: none;"></div>
+                </button>
+                
+                <div class="quote-display" id="quoteDisplay" style="display: none;">
+                    <div class="quote-text" id="quoteText">-</div>
+                    <div class="quote-author">— <span id="quoteAuthor">-</span></div>
+                </div>
+            </div>
+
+            <!-- Cat Facts -->
+            <div class="card">
+                <h2>🐱 Cat Facts <span class="api-source" id="catfactSource">via Backend</span></h2>
+                <button class="btn" id="getCatFactBtn">
+                    <span>🎲 Random Cat Fact</span>
+                    <div class="spinner" id="catfactSpinner" style="display: none;"></div>
+                </button>
+                
+                <div class="catfact-display" id="catfactDisplay" style="display: none;">
+                    <div class="catfact-text" id="catfactText">-</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let useBackendAPI = true;
+        const WEATHER_API_KEY = 'demo'; // For frontend calls (you'd need a real key)
+
+        $(document).ready(function() {
+            // API Toggle functionality
+            $('#backendToggle').click(() => switchAPIMode(true));
+            $('#frontendToggle').click(() => switchAPIMode(false));
+
+            // Weather functionality
+            $('#searchCityBtn').click(() => searchWeatherByCity());
+            $('#getCurrentLocationBtn').click(() => getCurrentLocationWeather());
+            $('#cityInput').keypress((e) => {
+                if (e.which === 13) searchWeatherByCity();
+            });
+
+            // Utility APIs
+            $('#getQuoteBtn').click(() => getRandomQuote());
+            $('#getCatFactBtn').click(() => getCatFact());
+
+            // Load initial data
+            getRandomQuote();
+            getCatFact();
+        });
+
+        function switchAPIMode(backend) {
+            useBackendAPI = backend;
+            
+            // Update toggle buttons
+            $('.toggle-btn').removeClass('active');
+            if (backend) {
+                $('#backendToggle').addClass('active');
+                $('#weatherSource').text('via Backend');
+                $('#quoteSource').text('via Backend');
+                $('#catfactSource').text('via Backend');
+            } else {
+                $('#frontendToggle').addClass('active');
+                $('#weatherSource').text('via Frontend');
+                $('#quoteSource').text('via Frontend');
+                $('#catfactSource').text('via Frontend');
+            }
+
+            showAlert(`Switched to ${backend ? 'Backend' : 'Frontend'} API calls`, 'info');
+        }
+
+        // Weather Functions
+        function searchWeatherByCity() {
+            const city = $('#cityInput').val().trim();
+            if (!city) {
+                showAlert('Please enter a city name', 'error');
+                return;
+            }
+
+            setLoadingState('city', true);
+
+            if (useBackendAPI) {
+                // Backend API call
+                $.ajax({
+                    url: `/api/weather/city/${encodeURIComponent(city)}`,
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            displayWeather(response.data);
+                            showAlert(`Weather data loaded for ${response.data.city}`, 'success');
+                        } else {
+                            showAlert(response.message, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        const response = xhr.responseJSON;
+                        showAlert(response?.message || 'Failed to fetch weather data', 'error');
+                    },
+                    complete: () => setLoadingState('city', false)
+                });
+            } else {
+                // Frontend API call (direct to OpenWeatherMap)
+                $.ajax({
+                    url: `https://api.openweathermap.org/data/2.5/weather`,
+                    method: 'GET',
+                    data: {
+                        q: city,
+                        appid: WEATHER_API_KEY,
+                        units: 'metric'
+                    },
+                    success: function(data) {
+                        const weatherData = {
+                            city: data.name,
+                            country: data.sys.country,
+                            temperature: Math.round(data.main.temp),
+                            description: data.weather[0].description,
+                            icon: data.weather[0].icon,
+                            humidity: data.main.humidity,
+                            pressure: data.main.pressure,
+                            windSpeed: data.wind.speed,
+                            feelsLike: Math.round(data.main.feels_like),
+                            visibility: data.visibility / 1000
+                        };
+                        displayWeather(weatherData);
+                        showAlert(`Weather data loaded for ${weatherData.city} (Frontend)`, 'success');
+                    },
+                    error: function() {
+                        showAlert('Frontend API call failed. Note: You need a valid API key for direct calls.', 'error');
+                    },
+                    complete: () => setLoadingState('city', false)
+                });
+            }
+        }
+
+        function getCurrentLocationWeather() {
+            if (!navigator.geolocation) {
+                showAlert('Geolocation is not supported by this browser', 'error');
+                return;
+            }
+
+            setLoadingState('location', true);
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    if (useBackendAPI) {
+                        // Backend API call
+                        $.ajax({
+                            url: '/api/weather/coordinates',
+                            method: 'GET',
+                            data: { lat, lon },
+                            success: function(response) {
+                                if (response.success) {
+                                    displayWeather(response.data);
+                                    showAlert(`Weather data loaded for your location`, 'success');
+                                } else {
+                                    showAlert(response.message, 'error');
+                                }
+                            },
+                            error: function(xhr) {
+                                const response = xhr.responseJSON;
+                                showAlert(response?.message || 'Failed to fetch weather data', 'error');
+                            },
+                            complete: () => setLoadingState('location', false)
+                        });
+                    } else {
+                        // Frontend API call
+                        $.ajax({
+                            url: `https://api.openweathermap.org/data/2.5/weather`,
+                            method: 'GET',
+                            data: {
+                                lat: lat,
+                                lon: lon,
+                                appid: WEATHER_API_KEY,
+                                units: 'metric'
+                            },
+                            success: function(data) {
+                                const weatherData = {
+                                    city: data.name,
+                                    country: data.sys.country,
+                                    temperature: Math.round(data.main.temp),
+                                    description: data.weather[0].description,
+                                    icon: data.weather[0].icon,
+                                    humidity: data.main.humidity,
+                                    pressure: data.main.pressure,
+                                    windSpeed: data.wind.speed,
+                                    feelsLike: Math.round(data.main.feels_like),
+                                    visibility: data.visibility / 1000
+                                };
+                                displayWeather(weatherData);
+                                showAlert(`Weather data loaded for your location (Frontend)`, 'success');
+                            },
+                            error: function() {
+                                showAlert('Frontend API call failed. Note: You need a valid API key.', 'error');
+                            },
+                            complete: () => setLoadingState('location', false)
+                        });
+                    }
+                },
+                function(error) {
+                    setLoadingState('location', false);
+                    showAlert('Unable to retrieve your location', 'error');
+                }
+            );
+        }
+
+        function displayWeather(data) {
+            $('#cityName').text(`${data.city}, ${data.country}`);
+            $('#temperature').text(`${data.temperature}°C`);
+            $('#description').text(data.description);
+            $('#feelsLike').text(`${data.feelsLike}°C`);
+            $('#humidity').text(`${data.humidity}%`);
+            $('#windSpeed').text(`${data.windSpeed} m/s`);
+            $('#pressure').text(`${data.pressure} hPa`);
+            $('#visibility').text(`${data.visibility} km`);
+            
+            // Weather icon mapping
+            const iconMap = {
+                '01d': '☀️', '01n': '🌙', '02d': '⛅', '02n': '☁️',
+                '03d': '☁️', '03n': '☁️', '04d': '☁️', '04n': '☁️',
+                '09d': '🌧️', '09n': '🌧️', '10d': '🌦️', '10n': '🌧️',
+                '11d': '⛈️', '11n': '⛈️', '13d': '❄️', '13n': '❄️',
+                '50d': '🌫️', '50n': '🌫️'
+            };
+            $('#weatherIcon').text(iconMap[data.icon] || '🌤️');
+            
+            $('#weatherDisplay').addClass('fade-in').show();
+        }
+
+        // Utility API Functions
+        function getRandomQuote() {
+            setLoadingState('quote', true);
+
+            if (useBackendAPI) {
+                // Backend API call
+                $.ajax({
+                    url: '/api/quote',
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            displayQuote(response.data);
+                        } else {
+                            showAlert('Failed to fetch quote', 'error');
+                        }
+                    },
+                    error: () => showAlert('Failed to fetch quote', 'error'),
+                    complete: () => setLoadingState('quote', false)
+                });
+            } else {
+                // Frontend API call
+                $.ajax({
+                    url: 'https://api.quotable.io/random',
+                    method: 'GET',
+                    success: function(data) {
+                        displayQuote({
+                            quote: data.content,
+                            author: data.author,
+                            tags: data.tags
+                        });
+                    },
+                    error: () => showAlert('Failed to fetch quote (Frontend)', 'error'),
+                    complete: () => setLoadingState('quote', false)
+                });
+            }
+        }
+
+        function getCatFact() {
+            setLoadingState('catfact', true);
+
+            if (useBackendAPI) {
+                // Backend API call
+                $.ajax({
+                    url: '/api/catfact',
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.success) {
+                            displayCatFact(response.data);
+                        } else {
+                            showAlert('Failed to fetch cat fact', 'error');
+                        }
+                    },
+                    error: () => showAlert('Failed to fetch cat fact', 'error'),
+                    complete: () => setLoadingState('catfact', false)
+                });
+            } else {
+                // Frontend API call
+                $.ajax({
+                    url: 'https://catfact.ninja/fact',
+                    method: 'GET',
+                    success: function(data) {
+                        displayCatFact({
+                            fact: data.fact,
+                            length: data.length
+                        });
+                    },
+                    error: () => showAlert('Failed to fetch cat fact (Frontend)', 'error'),
+                    complete: () => setLoadingState('catfact', false)
+                });
+            }
+        }
+
+        function displayQuote(data) {
+            $('#quoteText').text(`"${data.quote}"`);
+            $('#quoteAuthor').text(data.author);
+            $('#quoteDisplay').addClass('fade-in').show();
+        }
+
+        function displayCatFact(data) {
+            $('#catfactText').text(data.fact);
+            $('#catfactDisplay').addClass('fade-in').show();
+        }
+
+        // Utility Functions
+        function setLoadingState(type, loading) {
+            const spinnerMap = {
+                'city': '#citySpinner',
+                'location': '#locationSpinner',
+                'quote': '#quoteSpinner',
+                'catfact': '#catfactSpinner'
+            };
+
+            const buttonMap = {
+                'city': '#searchCityBtn',
+                'location': '#getCurrentLocationBtn',
+                'quote': '#getQuoteBtn',
+                'catfact': '#getCatFactBtn'
+            };
+
+            if (loading) {
+                $(spinnerMap[type]).show();
+                $(buttonMap[type]).prop('disabled', true);
+            } else {
+                $(spinnerMap[type]).hide();
+                $(buttonMap[type]).prop('disabled', false);
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertClass = `alert-${type}`;
+            const alertHtml = `<div class="alert ${alertClass}">${message}</div>`;
+            $('#alertContainer').html(alertHtml);
+            
+            setTimeout(() => {
+                $('#alertContainer').empty();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

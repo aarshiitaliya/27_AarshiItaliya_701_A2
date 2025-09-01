@@ -7,6 +7,10 @@ const employeeSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    tempPassword: {
+        type: String,
+        select: false  // Won't be returned in normal queries
+    },
     firstName: {
         type: String,
         required: true,

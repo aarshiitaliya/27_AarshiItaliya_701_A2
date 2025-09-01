@@ -19,15 +19,15 @@
                     </div>
                 </div>
 
-                <% if (req.query.success) { %>
+                <% if (query && query.success) { %>
                     <div class="alert alert-success">
-                        <%= req.query.success %>
+                        <%= query.success %>
                     </div>
                 <% } %>
 
-                <% if (req.query.error) { %>
+                <% if (query && query.error) { %>
                     <div class="alert alert-error">
-                        <%= req.query.error %>
+                        <%= query.error %>
                     </div>
                 <% } %>
 
@@ -43,6 +43,7 @@
                                     <th>Employee ID</th>
                                     <th>Name</th>
                                     <th>Email</th>
+                                    <th>Password</th>
                                     <th>Department</th>
                                     <th>Position</th>
                                     <th>Base Salary</th>
@@ -64,6 +65,9 @@
                                             </div>
                                         </td>
                                         <td><%= employee.email %></td>
+                                        <td style="font-family: monospace; background: #f8f9fa; padding: 4px 8px;">
+                                            <%= employee.tempPassword || 'Contact Admin' %>
+                                        </td>
                                         <td>
                                             <span class="dept-badge dept-<%= employee.department.toLowerCase() %>">
                                                 <%= employee.department %>

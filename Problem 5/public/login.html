@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Portal - Login</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>Employee Portal</h1>
+                <p>Sign in to access your profile and leave management</p>
+            </div>
+            
+            <div id="alertContainer"></div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="empId">Employee ID</label>
+                    <input type="text" id="empId" name="empId" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn" id="loginBtn">
+                    <span id="loginText">Sign In</span>
+                    <div id="loginSpinner" class="spinner" style="display: none;"></div>
+                </button>
+            </form>
+            
+            <div style="margin-top: 2rem; padding: 1rem; background: rgba(102, 126, 234, 0.1); border-radius: 10px;">
+                <p style="color: #4a5568; font-size: 0.9rem; text-align: center;">
+                    <strong>Demo Credentials:</strong><br>
+                    Use any Employee ID and password created from the Admin Panel (Problem 4)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Check if already logged in
+            const token = localStorage.getItem('employeeToken');
+            if (token) {
+                window.location.href = '/profile';
+            }
+
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const empId = $('#empId').val().trim();
+                const password = $('#password').val();
+                
+                if (!empId || !password) {
+                    showAlert('Please fill in all fields', 'error');
+                    return;
+                }
+                
+                // Show loading state
+                $('#loginBtn').prop('disabled', true);
+                $('#loginText').hide();
+                $('#loginSpinner').show();
+                
+                $.ajax({
+                    url: '/api/auth/login',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ empId, password }),
+                    success: function(response) {
+                        if (response.success) {
+                            // Store token and employee info
+                            localStorage.setItem('employeeToken', response.token);
+                            localStorage.setItem('employeeInfo', JSON.stringify(response.employee));
+                            
+                            showAlert('Login successful! Redirecting...', 'success');
+                            setTimeout(() => {
+                                window.location.href = '/profile';
+                            }, 1000);
+                        } else {
+                            showAlert(response.message || 'Login failed', 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        const response = xhr.responseJSON;
+                        showAlert(response?.message || 'Login failed. Please try again.', 'error');
+                    },
+                    complete: function() {
+                        // Hide loading state
+                        $('#loginBtn').prop('disabled', false);
+                        $('#loginText').show();
+                        $('#loginSpinner').hide();
+                    }
+                });
+            });
+        });
+
+        function showAlert(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const alertHtml = `<div class="alert ${alertClass}">${message}</div>`;
+            $('#alertContainer').html(alertHtml);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                $('#alertContainer').empty();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

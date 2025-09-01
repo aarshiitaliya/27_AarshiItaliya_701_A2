@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Portal - Profile</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Employee Profile</h1>
+            <div class="user-info">
+                <span class="user-name" id="userName">Loading...</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+
+        <nav class="nav">
+            <ul class="nav-links">
+                <li><a href="/profile" class="active">Profile</a></li>
+                <li><a href="/leave">Leave Management</a></li>
+            </ul>
+        </nav>
+
+        <div id="alertContainer"></div>
+        <div id="loadingContainer" class="loading">
+            <div class="spinner"></div>
+            <p>Loading profile...</p>
+        </div>
+
+        <div id="profileContainer" style="display: none;">
+            <div class="card">
+                <h2>Personal Information</h2>
+                <div class="profile-grid">
+                    <div class="profile-section">
+                        <h3>Basic Details</h3>
+                        <div class="profile-item">
+                            <span class="profile-label">Employee ID:</span>
+                            <span class="profile-value" id="empId">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Full Name:</span>
+                            <span class="profile-value" id="fullName">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Email:</span>
+                            <span class="profile-value" id="email">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Phone:</span>
+                            <span class="profile-value" id="phone">-</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>Work Details</h3>
+                        <div class="profile-item">
+                            <span class="profile-label">Department:</span>
+                            <span class="profile-value" id="department">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Position:</span>
+                            <span class="profile-value" id="position">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Joining Date:</span>
+                            <span class="profile-value" id="joiningDate">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Years of Service:</span>
+                            <span class="profile-value" id="yearsOfService">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Salary Information</h2>
+                <div class="profile-grid">
+                    <div class="profile-section">
+                        <h3>Salary Components</h3>
+                        <div class="profile-item">
+                            <span class="profile-label">Base Salary:</span>
+                            <span class="profile-value" id="baseSalary">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">HRA:</span>
+                            <span class="profile-value" id="hra">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Transport Allowance:</span>
+                            <span class="profile-value" id="transport">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Medical Allowance:</span>
+                            <span class="profile-value" id="medical">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Other Allowances:</span>
+                            <span class="profile-value" id="otherAllowances">-</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>Deductions & Net Salary</h3>
+                        <div class="profile-item">
+                            <span class="profile-label">PF Deduction:</span>
+                            <span class="profile-value" id="pf">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Tax Deduction:</span>
+                            <span class="profile-value" id="tax">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Insurance:</span>
+                            <span class="profile-value" id="insurance">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Other Deductions:</span>
+                            <span class="profile-value" id="otherDeductions">-</span>
+                        </div>
+                        <div class="profile-item" style="border-top: 2px solid #667eea; margin-top: 1rem; padding-top: 1rem;">
+                            <span class="profile-label"><strong>Gross Salary:</strong></span>
+                            <span class="profile-value" id="grossSalary" style="color: #22543d; font-weight: bold;">-</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label"><strong>Net Salary:</strong></span>
+                            <span class="profile-value" id="netSalary" style="color: #22543d; font-weight: bold; font-size: 1.2rem;">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            checkAuth();
+            loadProfile();
+        });
+
+        function checkAuth() {
+            const token = localStorage.getItem('employeeToken');
+            if (!token) {
+                window.location.href = '/';
+                return;
+            }
+
+            const employeeInfo = JSON.parse(localStorage.getItem('employeeInfo') || '{}');
+            $('#userName').text(employeeInfo.fullName || 'Employee');
+        }
+
+        function loadProfile() {
+            const token = localStorage.getItem('employeeToken');
+            
+            $.ajax({
+                url: '/api/employee/profile',
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                success: function(response) {
+                    if (response.success) {
+                        displayProfile(response.employee);
+                        $('#loadingContainer').hide();
+                        $('#profileContainer').show();
+                    } else {
+                        showAlert('Failed to load profile', 'error');
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 401) {
+                        logout();
+                    } else {
+                        showAlert('Failed to load profile. Please try again.', 'error');
+                        $('#loadingContainer').hide();
+                    }
+                }
+            });
+        }
+
+        function displayProfile(employee) {
+            $('#empId').text(employee.empId);
+            $('#fullName').text(employee.fullName);
+            $('#email').text(employee.email);
+            $('#phone').text(employee.phone);
+            $('#department').text(employee.department);
+            $('#position').text(employee.position);
+            $('#joiningDate').text(employee.joiningDate);
+            $('#yearsOfService').text(employee.yearsOfService + ' years');
+            
+            $('#baseSalary').text('₹' + employee.baseSalary.toLocaleString());
+            $('#hra').text('₹' + employee.allowances.hra.toLocaleString());
+            $('#transport').text('₹' + employee.allowances.transport.toLocaleString());
+            $('#medical').text('₹' + employee.allowances.medical.toLocaleString());
+            $('#otherAllowances').text('₹' + employee.allowances.other.toLocaleString());
+            
+            $('#pf').text('₹' + employee.deductions.pf.toLocaleString());
+            $('#tax').text('₹' + employee.deductions.tax.toLocaleString());
+            $('#insurance').text('₹' + employee.deductions.insurance.toLocaleString());
+            $('#otherDeductions').text('₹' + employee.deductions.other.toLocaleString());
+            
+            $('#grossSalary').text('₹' + employee.grossSalary.toLocaleString());
+            $('#netSalary').text('₹' + employee.netSalary.toLocaleString());
+        }
+
+        function logout() {
+            localStorage.removeItem('employeeToken');
+            localStorage.removeItem('employeeInfo');
+            window.location.href = '/';
+        }
+
+        function showAlert(message, type) {
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            const alertHtml = `<div class="alert ${alertClass}">${message}</div>`;
+            $('#alertContainer').html(alertHtml);
+            
+            setTimeout(() => {
+                $('#alertContainer').empty();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
